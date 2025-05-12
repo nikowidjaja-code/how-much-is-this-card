@@ -2,11 +2,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const getColor = (value: number) => {
-  if (value <= 0.25) return "text-green-600";
-  if (value === 0.5) return "text-yellow-600";
-  if (value === 1) return "text-orange-600";
-  return "text-red-600";
+const getCardStyle = (value: number) => {
+  if (value <= 0.25) return "bg-green-50 border-green-200";
+  if (value === 0.5) return "bg-yellow-50 border-yellow-200";
+  if (value === 1) return "bg-orange-50 border-orange-200";
+  return "bg-red-50 border-red-200";
+};
+
+const getBadgeStyle = (value: number) => {
+  if (value <= 0.25) return "bg-green-100 text-green-800";
+  if (value === 0.5) return "bg-yellow-100 text-yellow-800";
+  if (value === 1) return "bg-orange-100 text-orange-800";
+  return "bg-red-100 text-red-800";
 };
 
 export default function CardList() {
@@ -102,42 +109,42 @@ export default function CardList() {
           <div className="shimmer h-20 rounded-md w-full"></div>
         </div>
       ) : (
-        <ul className="space-y-2">
-          {filteredCards.length === 0 ? (
-            <div className="text-center py-10 text-gray-400">
-              No cards found.
-            </div>
-          ) : (
-            filteredCards.map((card: any) => (
-              <li
-                key={card.id}
-                className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
-              >
-                <div>
-                  <div className="text-lg font-medium">{card.name}</div>
-                  <div
-                    className={`text-sm font-semibold ${getColor(card.value)}`}
-                  >
-                    {card.value}
-                  </div>
+        <ul className="space-y-3">
+          {filteredCards.map((card: any) => (
+            <li
+              key={card.id}
+              className={`p-4 rounded-xl shadow-md flex justify-between items-center border ${getCardStyle(
+                card.value
+              )}`}
+            >
+              <div>
+                <div className="text-lg font-semibold text-gray-900">
+                  {card.name}
                 </div>
-                <div className="flex gap-3 text-sm">
-                  <Link
-                    href={`/edit/${card.id}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => deleteCard(card.id)}
-                    className="text-red-500 hover:underline"
-                  >
-                    Delete
-                  </button>
+                <div
+                  className={`mt-1 text-sm font-medium inline-block px-2 py-0.5 rounded ${getBadgeStyle(
+                    card.value
+                  )}`}
+                >
+                  {card.value}
                 </div>
-              </li>
-            ))
-          )}
+              </div>
+              <div className="flex gap-3 text-sm">
+                <Link
+                  href={`/edit/${card.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => deleteCard(card.id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </main>
