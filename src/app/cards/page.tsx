@@ -12,6 +12,8 @@ const getColor = (value: number) => {
 export default function CardList() {
   const [cards, setCards] = useState([]);
   const [search, setSearch] = useState("");
+  const [valueFilter, setValueFilter] = useState<number | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetch("/api/cards")
@@ -19,9 +21,13 @@ export default function CardList() {
       .then(setCards);
   }, []);
 
-  const filteredCards = cards.filter((card: any) =>
-    card.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCards = cards.filter((card) => {
+    const matchesValue = valueFilter === "all" || card.value === valueFilter;
+    const matchesSearch = card.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return matchesValue && matchesSearch;
+  });
 
   const deleteCard = async (id: string) => {
     if (!confirm("Are you sure you want to delete this card?")) return;
@@ -37,13 +43,31 @@ export default function CardList() {
   return (
     <main>
       <h1 className="text-2xl font-bold mb-4">All Cards</h1>
-      <input
-        type="text"
-        placeholder="Search cards..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border p-2 w-full mb-4 rounded"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border px-3 py-2 rounded text-base w-full sm:w-64"
+        />
+
+        <select
+          value={valueFilter}
+          onChange={(e) => {
+            const val = e.target.value;
+            setValueFilter(val === "all" ? "all" : parseFloat(val));
+          }}
+          className="border px-3 py-2 rounded text-base w-full sm:w-64"
+        >
+          <option value="all">All Values</option>
+          <option value="0.25">Low (0.25)</option>
+          <option value="0.5">Mid (0.5)</option>
+          <option value="1">High (1)</option>
+          <option value="2">Other (2)</option>
+        </select>
+      </div>
+
       <ul className="space-y-2">
         {filteredCards.map((card: any) => (
           <li
