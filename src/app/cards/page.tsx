@@ -10,6 +10,7 @@ const getColor = (value: number) => {
 };
 
 export default function CardList() {
+  const [sort, setSort] = useState("recent");
   const [cards, setCards] = useState([]);
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,14 +19,14 @@ export default function CardList() {
   useEffect(() => {
     const fetchCards = async () => {
       setLoading(true);
-      const res = await fetch("/api/cards");
+      const res = await fetch(`/api/cards?sort=${sort}`);
       const data = await res.json();
       setCards(data);
       setLoading(false);
     };
 
     fetchCards();
-  }, []);
+  }, [sort]);
 
   const filteredCards = cards.filter((card) => {
     const matchesValue = valueFilter === "all" || card.value === valueFilter;
@@ -72,6 +73,15 @@ export default function CardList() {
           <option value="1">High (1)</option>
           <option value="2">Other (2)</option>
         </select>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="border px-3 py-2 rounded text-base w-full sm:w-64"
+        >
+          <option value="recent">Recently Modified</option>
+          <option value="name">Alphabetical</option>
+          <option value="value">By Value</option>
+        </select>
       </div>
 
       {loading ? (
@@ -95,7 +105,9 @@ export default function CardList() {
               >
                 <div>
                   <div className="text-lg font-medium">{card.name}</div>
-                  <div className={`text-sm font-semibold ${getColor(card.value)}`}>
+                  <div
+                    className={`text-sm font-semibold ${getColor(card.value)}`}
+                  >
                     {card.value}
                   </div>
                 </div>
