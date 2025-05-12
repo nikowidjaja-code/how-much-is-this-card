@@ -10,7 +10,8 @@ const getColor = (value: number) => {
 };
 
 export default function CardList() {
-  const [sort, setSort] = useState("recent");
+  const [sortBy, setSortBy] = useState("updatedAt");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [cards, setCards] = useState([]);
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,14 +20,14 @@ export default function CardList() {
   useEffect(() => {
     const fetchCards = async () => {
       setLoading(true);
-      const res = await fetch(`/api/cards?sort=${sort}`);
+      const res = await fetch(`/api/cards?sortBy=${sortBy}&order=${order}`);
       const data = await res.json();
       setCards(data);
       setLoading(false);
     };
 
     fetchCards();
-  }, [sort]);
+  }, [sortBy, order]);
 
   const filteredCards = cards.filter((card) => {
     const matchesValue = valueFilter === "all" || card.value === valueFilter;
@@ -73,15 +74,24 @@ export default function CardList() {
           <option value="1">High (1)</option>
           <option value="2">Other (2)</option>
         </select>
+
         <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
           className="border px-3 py-2 rounded text-base w-full sm:w-64"
         >
-          <option value="recent">Recently Modified</option>
+          <option value="updatedAt">Recently Modified</option>
           <option value="name">Alphabetical</option>
           <option value="value">By Value</option>
         </select>
+
+        <button
+          onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+          className="border px-3 py-2 rounded text-base w-full sm:w-12 flex justify-center items-center"
+          title={order === "asc" ? "Ascending" : "Descending"}
+        >
+          {order === "asc" ? "▲" : "▼"}
+        </button>
       </div>
 
       {loading ? (
