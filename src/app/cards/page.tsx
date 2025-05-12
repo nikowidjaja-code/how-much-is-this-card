@@ -2,6 +2,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+const getColor = (value: number) => {
+  if (value <= 0.25) return "text-green-600";
+  if (value === 0.5) return "text-yellow-600";
+  if (value === 1) return "text-orange-600";
+  return "text-red-600";
+};
+
 export default function CardList() {
   const [cards, setCards] = useState([]);
   const [search, setSearch] = useState("");
@@ -41,18 +48,24 @@ export default function CardList() {
         {filteredCards.map((card: any) => (
           <li
             key={card.id}
-            className="border p-3 rounded flex justify-between items-center"
+            className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
           >
-            <span>
-              {card.name} — {card.value}
-            </span>
-            <div className="flex gap-3">
-              <Link href={`/edit/${card.id}`} className="text-blue-500">
+            <div>
+              <div className="text-lg font-medium">{card.name}</div>
+              <div className={`text-sm font-semibold ${getColor(card.value)}`}>
+                {card.value}
+              </div>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <Link
+                href={`/edit/${card.id}`}
+                className="text-blue-600 hover:underline"
+              >
                 Edit
               </Link>
               <button
                 onClick={() => deleteCard(card.id)}
-                className="text-red-500"
+                className="text-red-500 hover:underline"
               >
                 Delete
               </button>

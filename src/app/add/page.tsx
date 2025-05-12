@@ -1,46 +1,51 @@
-'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AddCard() {
-  const [name, setName] = useState('')
-  const [value, setValue] = useState(0.5)
-  const router = useRouter()
+  const [name, setName] = useState("");
+  const [value, setValue] = useState(0.5);
+  const router = useRouter();
 
   const addCard = async () => {
-    await fetch('/api/cards', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch("/api/cards", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, value }),
-    })
-    router.push('/cards')
-  }
+    });
+    router.push("/cards");
+  };
 
   return (
-    <main>
-      <h1 className="text-2xl font-bold mb-4">Add New Card</h1>
-      <input
-        value={name}
-        onChange={e => setName(e.target.value)}
-        placeholder="Card name"
-        className="border p-2 w-full mb-2"
-      />
-      <select
-        value={value}
-        onChange={e => setValue(parseFloat(e.target.value))}
-        className="border p-2 w-full mb-4"
-      >
-        <option value={0.25}>Low (0.25)</option>
-        <option value={0.5}>Mid (0.5)</option>
-        <option value={1}>High (1)</option>
-        <option value={2}>Other</option>
-      </select>
+    <div className="bg-white p-6 rounded-xl shadow space-y-4">
+      <div>
+        <label className="block text-sm font-semibold mb-1">Card Name</label>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border rounded px-3 py-2 text-base"
+          placeholder="Card name"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-semibold mb-1">Value</label>
+        <select
+          value={value}
+          onChange={(e) => setValue(parseFloat(e.target.value))}
+          className="w-full border rounded px-3 py-2 text-base"
+        >
+          <option value={0.25}>Low (0.25)</option>
+          <option value={0.5}>Mid (0.5)</option>
+          <option value={1}>High (1)</option>
+          <option value={2}>Other (2)</option>
+        </select>
+      </div>
       <button
         onClick={addCard}
-        className="bg-green-600 text-white px-4 py-2 rounded w-full"
+        className="w-full bg-blue-600 text-white py-2 rounded text-lg font-semibold hover:bg-blue-700"
       >
-        Save
+        Add Card
       </button>
-    </main>
-  )
+    </div>
+  );
 }
