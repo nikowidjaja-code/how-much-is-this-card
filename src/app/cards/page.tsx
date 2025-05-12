@@ -5,6 +5,7 @@ import Link from "next/link";
 const getCardStyle = (value: number) => {
   if (value <= 0.25) return "bg-green-50 border-green-200";
   if (value === 0.5) return "bg-yellow-50 border-yellow-200";
+  if (value === 0.75) return "bg-sky-50 text-sky-200";
   if (value === 1) return "bg-orange-50 border-orange-200";
   return "bg-red-50 border-red-200";
 };
@@ -12,6 +13,7 @@ const getCardStyle = (value: number) => {
 const getBadgeStyle = (value: number) => {
   if (value <= 0.25) return "bg-green-100 text-green-800";
   if (value === 0.5) return "bg-yellow-100 text-yellow-800";
+  if (value === 0.75) return "bg-sky-100 text-sky-800";
   if (value === 1) return "bg-orange-100 text-orange-800";
   return "bg-red-100 text-red-800";
 };
@@ -78,8 +80,9 @@ export default function CardList() {
           <option value="all">All Values</option>
           <option value="0.25">Low (0.25)</option>
           <option value="0.5">Mid (0.5)</option>
+          <option value="0.5">So So (0.75)</option>
           <option value="1">High (1)</option>
-          <option value="2">Other (2)</option>
+          <option value="2">Other</option>
         </select>
 
         <select

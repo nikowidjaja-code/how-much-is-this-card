@@ -36,6 +36,7 @@ export default function AddCard() {
         >
           <option value={0.25}>Low (0.25)</option>
           <option value={0.5}>Mid (0.5)</option>
+          <option value="0.5">So So (0.75)</option>
           <option value={1}>High (1)</option>
           <option value={2}>Other (2)</option>
         </select>
