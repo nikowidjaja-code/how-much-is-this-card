@@ -1,11 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { redirect } from 'next/navigation'
 
 export default function Home() {
   const [cards, setCards] = useState([])
   const [name, setName] = useState('')
   const [value, setValue] = useState(0.5)
 
+  redirect('/cards')
+  
   useEffect(() => {
     fetch('/api/cards')
       .then(res => res.json())
