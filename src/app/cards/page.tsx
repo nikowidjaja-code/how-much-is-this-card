@@ -11,14 +11,20 @@ const getColor = (value: number) => {
 
 export default function CardList() {
   const [cards, setCards] = useState([]);
-  const [search, setSearch] = useState("");
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/cards")
-      .then((res) => res.json())
-      .then(setCards);
+    const fetchCards = async () => {
+      setLoading(true);
+      const res = await fetch("/api/cards");
+      const data = await res.json();
+      setCards(data);
+      setLoading(false);
+    };
+
+    fetchCards();
   }, []);
 
   const filteredCards = cards.filter((card) => {
@@ -68,35 +74,50 @@ export default function CardList() {
         </select>
       </div>
 
-      <ul className="space-y-2">
-        {filteredCards.map((card: any) => (
-          <li
-            key={card.id}
-            className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
-          >
-            <div>
-              <div className="text-lg font-medium">{card.name}</div>
-              <div className={`text-sm font-semibold ${getColor(card.value)}`}>
-                {card.value}
-              </div>
+      {loading ? (
+        // Shimmer Placeholder
+        <div className="space-y-4">
+          <div className="shimmer h-20 rounded-md w-full"></div>
+          <div className="shimmer h-20 rounded-md w-full"></div>
+          <div className="shimmer h-20 rounded-md w-full"></div>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {filteredCards.length === 0 ? (
+            <div className="text-center py-10 text-gray-400">
+              No cards found.
             </div>
-            <div className="flex gap-3 text-sm">
-              <Link
-                href={`/edit/${card.id}`}
-                className="text-blue-600 hover:underline"
+          ) : (
+            filteredCards.map((card: any) => (
+              <li
+                key={card.id}
+                className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
               >
-                Edit
-              </Link>
-              <button
-                onClick={() => deleteCard(card.id)}
-                className="text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+                <div>
+                  <div className="text-lg font-medium">{card.name}</div>
+                  <div className={`text-sm font-semibold ${getColor(card.value)}`}>
+                    {card.value}
+                  </div>
+                </div>
+                <div className="flex gap-3 text-sm">
+                  <Link
+                    href={`/edit/${card.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => deleteCard(card.id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      )}
     </main>
   );
 }
