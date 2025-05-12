@@ -129,16 +129,16 @@ export default function CardList() {
                   {card.value}
                 </div>
               </div>
-              <div className="flex gap-3 text-sm">
+              <div className="flex gap-2">
                 <Link
                   href={`/edit/${card.id}`}
-                  className="text-blue-600 hover:underline"
+                  className="px-3 py-1 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => deleteCard(card.id)}
-                  className="text-red-500 hover:underline"
+                  className="px-3 py-1 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded transition"
                 >
                   Delete
                 </button>
