@@ -42,9 +42,9 @@ export default function EditCard() {
       >
         <option value={0.25}>Low (0.25)</option>
         <option value={0.5}>Mid (0.5)</option>
-        <option value="0.5">So So (0.75)</option>
+        <option value={0.75}>So So (0.75)</option>
         <option value={1}>High (1)</option>
-        <option value={2}>Other</option>
+        <option value={0}>Other</option>
       </select>
       <button
         onClick={updateCard}

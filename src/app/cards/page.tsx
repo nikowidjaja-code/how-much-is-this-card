@@ -39,7 +39,10 @@ export default function CardList() {
   }, [sortBy, order]);
 
   const filteredCards = cards.filter((card) => {
-    const matchesValue = valueFilter === "all" || card.value === valueFilter;
+    const matchesValue =
+      valueFilter === "all" ||
+      card.value === valueFilter ||
+      (valueFilter === 0 && card.value > 1);
     const matchesSearch = card.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -78,11 +81,11 @@ export default function CardList() {
           className="border px-3 py-2 rounded text-base w-full sm:w-64"
         >
           <option value="all">All Values</option>
-          <option value="0.25">Low (0.25)</option>
-          <option value="0.5">Mid (0.5)</option>
-          <option value="0.5">So So (0.75)</option>
-          <option value="1">High (1)</option>
-          <option value="2">Other</option>
+          <option value={0.25}>Low (0.25)</option>
+          <option value={0.5}>Mid (0.5)</option>
+          <option value={0.75}>So So (0.75)</option>
+          <option value={1}>High (1)</option>
+          <option value={0}>Other</option>
         </select>
 
         <select
