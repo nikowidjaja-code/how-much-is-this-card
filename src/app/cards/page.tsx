@@ -2,6 +2,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+interface Card {
+  id: string;
+  name: string;
+  value: number;
+  updatedAt: string;
+}
+
 const getCardStyle = (value: number) => {
   if (value <= 0.25) return "bg-green-50 border-green-200";
   if (value === 0.5) return "bg-yellow-50 border-yellow-200";
@@ -19,9 +26,11 @@ const getBadgeStyle = (value: number) => {
 };
 
 export default function CardList() {
-  const [sortBy, setSortBy] = useState("updatedAt");
+  const [sortBy, setSortBy] = useState<"updatedAt" | "name" | "value">(
+    "updatedAt"
+  );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -52,12 +61,14 @@ export default function CardList() {
   const deleteCard = async (id: string) => {
     if (!confirm("Are you sure you want to delete this card?")) return;
 
-    await fetch(`/api/cards/${id}`, {
-      method: "DELETE",
-    });
-
-    // Refresh local state after deletion
-    setCards((prev) => prev.filter((card: any) => card.id !== id));
+    try {
+      await fetch(`/api/cards/${id}`, {
+        method: "DELETE",
+      });
+      setCards((prevCards) => prevCards.filter((card) => card.id !== id));
+    } catch (error) {
+      alert("Failed to delete card. Please try again later.");
+    }
   };
 
   return (
@@ -90,7 +101,9 @@ export default function CardList() {
 
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={(e) =>
+            setSortBy(e.target.value as "updatedAt" | "name" | "value")
+          }
           className="border px-3 py-2 rounded text-base w-full sm:w-64"
         >
           <option value="updatedAt">Recently Modified</option>
@@ -116,7 +129,7 @@ export default function CardList() {
         </div>
       ) : (
         <ul className="space-y-3">
-          {filteredCards.map((card: any) => (
+          {filteredCards.map((card) => (
             <li
               key={card.id}
               className={`p-4 rounded-xl shadow-md flex justify-between items-center border ${getCardStyle(
