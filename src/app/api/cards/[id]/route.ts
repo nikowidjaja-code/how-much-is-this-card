@@ -1,16 +1,43 @@
-// app/api/cards/[id]/route.ts
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-import { NextResponse } from 'next/server'
-
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
-  // logic to delete the card by id
-  return NextResponse.json({ message: 'Deleted' });
+export async function DELETE(
+  _: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await prisma.card.delete({
+      where: { id: params.id },
+    });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return NextResponse.json(
+      { error: "Failed to delete card" },
+      { status: 500 }
+    );
+  }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const { name, value } = await req.json();
   const id = params.id;
-  const body = await req.json();
-  // logic to update the card
-  return NextResponse.json({ message: 'Updated' });
+
+  try {
+    await prisma.card.update({
+      where: { id },
+      data: { name, value },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Update error:", err);
+    return NextResponse.json(
+      { error: "Failed to update card" },
+      { status: 500 }
+    );
+  }
 }
