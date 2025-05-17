@@ -180,18 +180,19 @@ export default function CardList() {
           {filteredCards.map((card) => (
             <li
               key={card.id}
-              className={`py-3 px-5 rounded-lg shadow-sm flex justify-between items-center border ${getCardStyle(
+              className={`py-3 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
                 card.value
               )}`}
             >
-              <div className="flex items-center gap-3">
-                <div className="text-base font-medium text-gray-700 capitalize font-sans">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="text-base font-medium text-gray-700 capitalize font-sans truncate max-w-[200px] sm:max-w-none">
                   {card.name.toLowerCase().split(' ').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ')}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              
+              <div className="flex items-center gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
                 <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
                   <div
                     className={`font-medium px-2 py-1 rounded-full ${getBadgeStyle(
@@ -204,7 +205,7 @@ export default function CardList() {
                     {new Date(card.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="h-4 w-px bg-gray-200 mx-2"></div>
+                <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
                 <div className="flex gap-3">
                   <Link
                     href={`/edit/${card.id}`}
