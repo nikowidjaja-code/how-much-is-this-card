@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma"; // adjust the path as needed
 
+export const dynamic = 'force-dynamic';
+
 // GET handler
 export async function GET(req: NextRequest) {
   try {
