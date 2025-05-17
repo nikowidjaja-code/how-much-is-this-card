@@ -9,31 +9,40 @@ interface Card {
   updatedAt: string;
 }
 
+interface DeleteState {
+  id: string | null;
+  isDeleting: boolean;
+  error: string | null;
+}
+
 const getCardStyle = (value: number) => {
-  if (value <= 0.25) return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 transition-colors";
-  if (value === 0.5) return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 transition-colors";
-  if (value === 0.75) return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 transition-colors";
-  if (value === 1) return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 transition-colors";
-  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 transition-colors";
+  if (value <= 0.25) return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 hover:shadow-md transition-all duration-200";
+  if (value === 0.5) return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 hover:shadow-md transition-all duration-200";
+  if (value === 0.75) return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 hover:shadow-md transition-all duration-200";
+  if (value === 1) return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 hover:shadow-md transition-all duration-200";
+  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-md transition-all duration-200";
 };
 
 const getBadgeStyle = (value: number) => {
-  if (value <= 0.25) return "bg-emerald-100/80 text-emerald-700 font-medium";
-  if (value === 0.5) return "bg-amber-100/80 text-amber-700 font-medium";
-  if (value === 0.75) return "bg-blue-100/80 text-blue-700 font-medium";
-  if (value === 1) return "bg-orange-100/80 text-orange-700 font-medium";
-  return "bg-rose-100/80 text-rose-700 font-medium";
+  if (value <= 0.25) return "bg-emerald-100/80 text-emerald-700 font-medium shadow-sm";
+  if (value === 0.5) return "bg-amber-100/80 text-amber-700 font-medium shadow-sm";
+  if (value === 0.75) return "bg-blue-100/80 text-blue-700 font-medium shadow-sm";
+  if (value === 1) return "bg-orange-100/80 text-orange-700 font-medium shadow-sm";
+  return "bg-rose-100/80 text-rose-700 font-medium shadow-sm";
 };
 
 export default function CardList() {
-  const [sortBy, setSortBy] = useState<"updatedAt" | "name" | "value">(
-    "updatedAt"
-  );
+  const [sortBy, setSortBy] = useState<"updatedAt" | "name" | "value">("updatedAt");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [cards, setCards] = useState<Card[]>([]);
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteState, setDeleteState] = useState<DeleteState>({
+    id: null,
+    isDeleting: false,
+    error: null,
+  });
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -59,30 +68,42 @@ export default function CardList() {
   });
 
   const deleteCard = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this card?")) return;
-
+    setDeleteState({ id, isDeleting: true, error: null });
+    
     try {
       await fetch(`/api/cards/${id}`, {
         method: "DELETE",
       });
       setCards((prevCards) => prevCards.filter((card) => card.id !== id));
     } catch (error) {
-      alert("Failed to delete card. Please try again later.");
+      setDeleteState((prev) => ({ ...prev, error: "Failed to delete card. Please try again later." }));
+    } finally {
+      setDeleteState({ id: null, isDeleting: false, error: null });
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
     }
   };
 
   return (
-    <main>
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-4">All Cards</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">All Cards</h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border px-3 py-2 rounded text-base w-full sm:w-64"
-          />
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              aria-label="Search cards"
+            />
+          </div>
 
           <select
             value={valueFilter}
@@ -90,7 +111,8 @@ export default function CardList() {
               const val = e.target.value;
               setValueFilter(val === "all" ? "all" : parseFloat(val));
             }}
-            className="border px-3 py-2 rounded text-base w-full sm:w-64"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            aria-label="Filter by value"
           >
             <option value="all">All Values</option>
             <option value={0.25}>Low (0.25)</option>
@@ -105,7 +127,8 @@ export default function CardList() {
             onChange={(e) =>
               setSortBy(e.target.value as "updatedAt" | "name" | "value")
             }
-            className="border px-3 py-2 rounded text-base w-full sm:w-64"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            aria-label="Sort by"
           >
             <option value="updatedAt">Recently Modified</option>
             <option value="name">Alphabetical</option>
@@ -114,8 +137,9 @@ export default function CardList() {
 
           <button
             onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-            className="border px-3 py-2 rounded text-base w-full sm:w-12 flex justify-center items-center"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             title={order === "asc" ? "Ascending" : "Descending"}
+            aria-label={`Sort ${order === "asc" ? "ascending" : "descending"}`}
           >
             {order === "asc" ? "▲" : "▼"}
           </button>
@@ -123,32 +147,35 @@ export default function CardList() {
       </div>
 
       {loading ? (
-        // Shimmer Placeholder
-        <div className="space-y-4">
-          <div className="shimmer h-20 rounded-md w-full"></div>
-          <div className="shimmer h-20 rounded-md w-full"></div>
-          <div className="shimmer h-20 rounded-md w-full"></div>
+        <div className="space-y-4" role="status" aria-label="Loading cards">
+          <div className="shimmer h-20 rounded-lg w-full"></div>
+          <div className="shimmer h-20 rounded-lg w-full"></div>
+          <div className="shimmer h-20 rounded-lg w-full"></div>
+        </div>
+      ) : filteredCards.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
+          <p className="text-gray-500 text-lg">No cards found matching your criteria</p>
         </div>
       ) : (
         <ul className="space-y-4 overflow-auto max-h-[calc(100vh-16rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
           {filteredCards.map((card) => (
             <li
               key={card.id}
-              className={`py-2.5 px-4 rounded-lg shadow-sm flex justify-between items-center border ${getCardStyle(
+              className={`py-3 px-5 rounded-lg shadow-sm flex justify-between items-center border ${getCardStyle(
                 card.value
               )}`}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <div className="text-base font-medium text-gray-700 capitalize font-sans">
                   {card.name.toLowerCase().split(' ').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ')}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 text-xs text-gray-500 font-sans">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
                   <div
-                    className={`font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
+                    className={`font-medium px-2 py-1 rounded-full ${getBadgeStyle(
                       card.value
                     )}`}
                   >
@@ -159,24 +186,34 @@ export default function CardList() {
                   </span>
                 </div>
                 <div className="h-4 w-px bg-gray-200 mx-2"></div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <Link
                     href={`/edit/${card.id}`}
-                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-sans"
+                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-sans hover:underline"
+                    aria-label={`Edit ${card.name}`}
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => deleteCard(card.id)}
-                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-sans"
+                    onKeyPress={(e) => handleKeyPress(e, () => deleteCard(card.id))}
+                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-sans hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={deleteState.isDeleting && deleteState.id === card.id}
+                    aria-label={`Delete ${card.name}`}
                   >
-                    Delete
+                    {deleteState.isDeleting && deleteState.id === card.id ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {deleteState.error && (
+        <div className="fixed bottom-4 right-4 bg-rose-100 text-rose-700 px-4 py-2 rounded-lg shadow-lg border border-rose-200 animate-fade-in">
+          {deleteState.error}
+        </div>
       )}
     </main>
   );
