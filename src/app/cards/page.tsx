@@ -139,33 +139,40 @@ export default function CardList() {
               )}`}
             >
               <div className="flex items-center gap-2">
-                <div className="text-base font-semibold text-gray-700">
-                  {card.name}
+                <div className="text-base font-semibold text-gray-700 capitalize">
+                  {card.name.toLowerCase().split(' ').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                  ).join(' ')}
                 </div>
-                <div
-                  className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
-                    card.value
-                  )}`}
-                >
-                  {card.value}
-                </div>
-                <span className="text-xs text-gray-500">
-                  {new Date(card.updatedAt).toLocaleDateString()}
-                </span>
               </div>
-              <div className="flex gap-2">
-                <Link
-                  href={`/edit/${card.id}`}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => deleteCard(card.id)}
-                  className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors"
-                >
-                  Delete
-                </button>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div
+                    className={`font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
+                      card.value
+                    )}`}
+                  >
+                    {card.value}
+                  </div>
+                  <span>
+                    {new Date(card.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="h-4 w-px bg-gray-200 mx-2"></div>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/edit/${card.id}`}
+                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => deleteCard(card.id)}
+                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </li>
           ))}
