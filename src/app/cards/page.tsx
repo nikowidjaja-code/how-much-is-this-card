@@ -151,16 +151,16 @@ export default function CardList() {
           {[...Array(3)].map((_, index) => (
             <div key={index} className="animate-pulse">
               <div className="py-3 px-5 rounded-lg border bg-gray-50/50">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div className="h-5 w-32 bg-gray-200 rounded"></div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                     <div className="flex items-center gap-3">
                       <div className="h-5 w-12 bg-gray-200 rounded-full"></div>
                       <div className="h-4 w-24 bg-gray-200 rounded"></div>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 mx-2"></div>
+                    <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
                     <div className="flex gap-3">
                       <div className="h-5 w-8 bg-gray-200 rounded"></div>
                       <div className="h-5 w-12 bg-gray-200 rounded"></div>
