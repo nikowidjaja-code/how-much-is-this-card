@@ -73,51 +73,53 @@ export default function CardList() {
 
   return (
     <main>
-      <h1 className="text-2xl font-bold mb-4">All Cards</h1>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="border px-3 py-2 rounded text-base w-full sm:w-64"
-        />
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-4">All Cards</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border px-3 py-2 rounded text-base w-full sm:w-64"
+          />
 
-        <select
-          value={valueFilter}
-          onChange={(e) => {
-            const val = e.target.value;
-            setValueFilter(val === "all" ? "all" : parseFloat(val));
-          }}
-          className="border px-3 py-2 rounded text-base w-full sm:w-64"
-        >
-          <option value="all">All Values</option>
-          <option value={0.25}>Low (0.25)</option>
-          <option value={0.5}>Mid (0.5)</option>
-          <option value={0.75}>So So (0.75)</option>
-          <option value={1}>High (1)</option>
-          <option value={0}>Other</option>
-        </select>
+          <select
+            value={valueFilter}
+            onChange={(e) => {
+              const val = e.target.value;
+              setValueFilter(val === "all" ? "all" : parseFloat(val));
+            }}
+            className="border px-3 py-2 rounded text-base w-full sm:w-64"
+          >
+            <option value="all">All Values</option>
+            <option value={0.25}>Low (0.25)</option>
+            <option value={0.5}>Mid (0.5)</option>
+            <option value={0.75}>So So (0.75)</option>
+            <option value={1}>High (1)</option>
+            <option value={0}>Other</option>
+          </select>
 
-        <select
-          value={sortBy}
-          onChange={(e) =>
-            setSortBy(e.target.value as "updatedAt" | "name" | "value")
-          }
-          className="border px-3 py-2 rounded text-base w-full sm:w-64"
-        >
-          <option value="updatedAt">Recently Modified</option>
-          <option value="name">Alphabetical</option>
-          <option value="value">By Value</option>
-        </select>
+          <select
+            value={sortBy}
+            onChange={(e) =>
+              setSortBy(e.target.value as "updatedAt" | "name" | "value")
+            }
+            className="border px-3 py-2 rounded text-base w-full sm:w-64"
+          >
+            <option value="updatedAt">Recently Modified</option>
+            <option value="name">Alphabetical</option>
+            <option value="value">By Value</option>
+          </select>
 
-        <button
-          onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-          className="border px-3 py-2 rounded text-base w-full sm:w-12 flex justify-center items-center"
-          title={order === "asc" ? "Ascending" : "Descending"}
-        >
-          {order === "asc" ? "▲" : "▼"}
-        </button>
+          <button
+            onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+            className="border px-3 py-2 rounded text-base w-full sm:w-12 flex justify-center items-center"
+            title={order === "asc" ? "Ascending" : "Descending"}
+          >
+            {order === "asc" ? "▲" : "▼"}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -128,7 +130,7 @@ export default function CardList() {
           <div className="shimmer h-20 rounded-md w-full"></div>
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 overflow-auto max-h-96 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
           {filteredCards.map((card) => (
             <li
               key={card.id}
