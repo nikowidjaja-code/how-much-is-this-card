@@ -132,7 +132,7 @@ export default function CardList() {
           >
             <option value="updatedAt">Recently Modified</option>
             <option value="name">Alphabetical</option>
-            <option value="value">By Value</option>
+            <option value="value">Value</option>
           </select>
 
           <button
