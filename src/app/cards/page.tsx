@@ -10,19 +10,19 @@ interface Card {
 }
 
 const getCardStyle = (value: number) => {
-  if (value <= 0.25) return "bg-green-50 border-green-200";
-  if (value === 0.5) return "bg-yellow-50 border-yellow-200";
-  if (value === 0.75) return "bg-sky-50 text-sky-200";
-  if (value === 1) return "bg-orange-50 border-orange-200";
-  return "bg-red-50 border-red-200";
+  if (value <= 0.25) return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 transition-colors";
+  if (value === 0.5) return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 transition-colors";
+  if (value === 0.75) return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 transition-colors";
+  if (value === 1) return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 transition-colors";
+  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 transition-colors";
 };
 
 const getBadgeStyle = (value: number) => {
-  if (value <= 0.25) return "bg-green-100 text-green-800";
-  if (value === 0.5) return "bg-yellow-100 text-yellow-800";
-  if (value === 0.75) return "bg-sky-100 text-sky-800";
-  if (value === 1) return "bg-orange-100 text-orange-800";
-  return "bg-red-100 text-red-800";
+  if (value <= 0.25) return "bg-emerald-100/80 text-emerald-700 font-medium";
+  if (value === 0.5) return "bg-amber-100/80 text-amber-700 font-medium";
+  if (value === 0.75) return "bg-blue-100/80 text-blue-700 font-medium";
+  if (value === 1) return "bg-orange-100/80 text-orange-700 font-medium";
+  return "bg-rose-100/80 text-rose-700 font-medium";
 };
 
 export default function CardList() {
@@ -130,36 +130,39 @@ export default function CardList() {
           <div className="shimmer h-20 rounded-md w-full"></div>
         </div>
       ) : (
-        <ul className="space-y-3 overflow-auto max-h-96 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
+        <ul className="space-y-4 overflow-auto max-h-[calc(100vh-16rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
           {filteredCards.map((card) => (
             <li
               key={card.id}
-              className={`p-4 rounded-xl shadow-md flex justify-between items-center border ${getCardStyle(
+              className={`py-2.5 px-4 rounded-lg shadow-sm flex justify-between items-center border ${getCardStyle(
                 card.value
               )}`}
             >
-              <div>
-                <div className="text-lg font-semibold text-gray-900">
+              <div className="flex items-center gap-2">
+                <div className="text-base font-semibold text-gray-700">
                   {card.name}
                 </div>
                 <div
-                  className={`mt-1 text-sm font-medium inline-block px-2 py-0.5 rounded ${getBadgeStyle(
+                  className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
                     card.value
                   )}`}
                 >
                   {card.value}
                 </div>
+                <span className="text-xs text-gray-500">
+                  {new Date(card.updatedAt).toLocaleDateString()}
+                </span>
               </div>
               <div className="flex gap-2">
                 <Link
                   href={`/edit/${card.id}`}
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => deleteCard(card.id)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors"
                 >
                   Delete
                 </button>
