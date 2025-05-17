@@ -148,11 +148,11 @@ export default function CardList() {
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 text-xs text-gray-500 font-sans">
                   <div
-                    className={`font-semibold px-1.5 py-0.5 rounded-full ${getBadgeStyle(
+                    className={`font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
                       card.value
                     )}`}
                   >
-                    {card.value}
+                    {card.value.toFixed(2)}
                   </div>
                   <span className="font-normal">
                     {new Date(card.updatedAt).toLocaleDateString()}
