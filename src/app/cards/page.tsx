@@ -139,22 +139,22 @@ export default function CardList() {
               )}`}
             >
               <div className="flex items-center gap-2">
-                <div className="text-base font-semibold text-gray-700 capitalize">
+                <div className="text-base font-medium text-gray-700 capitalize font-sans">
                   {card.name.toLowerCase().split(' ').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ')}
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-gray-500 font-sans">
                   <div
-                    className={`font-medium px-1.5 py-0.5 rounded-full ${getBadgeStyle(
+                    className={`font-semibold px-1.5 py-0.5 rounded-full ${getBadgeStyle(
                       card.value
                     )}`}
                   >
                     {card.value}
                   </div>
-                  <span>
+                  <span className="font-normal">
                     {new Date(card.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -162,13 +162,13 @@ export default function CardList() {
                 <div className="flex gap-2">
                   <Link
                     href={`/edit/${card.id}`}
-                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-sans"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => deleteCard(card.id)}
-                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors"
+                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-sans"
                   >
                     Delete
                   </button>

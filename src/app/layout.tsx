@@ -1,6 +1,5 @@
-import "styles/globals.css";
-import Link from "next/link";
-import Head from "next/head";
+import 'styles/globals.css';
+import Link from 'next/link';
 
 export const metadata = {
   title: "CUE Card Vault",
@@ -17,18 +16,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={metadata.description} />
         <meta name="keywords" content={metadata.keywords} />
         <meta name="author" content={metadata.author} />
-
         <link rel="icon" href="/favicon.ico" sizes="any" />
-
-        <title>{metadata.title}</title>
-      </Head>
-      <body className="bg-gray-100 text-gray-900">
+      </head>
+      <body className="bg-gray-100 text-gray-900 font-sans">
         <header className="bg-white shadow sticky top-0 z-10">
           <nav className="max-w-3xl mx-auto flex justify-between p-4 text-lg font-semibold">
             <Link href="/cards" className="hover:text-blue-600">
