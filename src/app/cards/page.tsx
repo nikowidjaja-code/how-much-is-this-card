@@ -90,9 +90,9 @@ export default function CardList() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">All Cards</h1>
+    <div className="h-full flex flex-col">
+      <div className="py-4 flex-none">
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">All Cards</h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-full sm:w-64">
             <input
@@ -146,101 +146,103 @@ export default function CardList() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="space-y-4" role="status" aria-label="Loading cards">
-          {[...Array(3)].map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="py-3 px-5 rounded-lg border bg-gray-50/50">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="h-5 w-32 bg-gray-200 rounded"></div>
-                  </div>
-                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="flex items-center gap-3">
-                      <div className="h-5 w-12 bg-gray-200 rounded-full"></div>
-                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+      <div className="flex-1 min-h-0 overflow-hidden">
+        {loading ? (
+          <div className="space-y-4" role="status" aria-label="Loading cards">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="py-3 px-5 rounded-lg border bg-gray-50/50">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <div className="h-5 w-32 bg-gray-200 rounded"></div>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                    <div className="flex gap-3">
-                      <div className="h-5 w-8 bg-gray-200 rounded"></div>
-                      <div className="h-5 w-12 bg-gray-200 rounded"></div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      <div className="flex items-center gap-3">
+                        <div className="h-5 w-12 bg-gray-200 rounded-full"></div>
+                        <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                      </div>
+                      <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                      <div className="flex gap-3">
+                        <div className="h-5 w-8 bg-gray-200 rounded"></div>
+                        <div className="h-5 w-12 bg-gray-200 rounded"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : filteredCards.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
-          <p className="text-gray-500 text-lg mb-4">No cards found matching your criteria</p>
-          <Link
-            href={`/add?name=${encodeURIComponent(searchQuery)}`}
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Add New Card
-          </Link>
-        </div>
-      ) : (
-        <ul className="space-y-4 overflow-auto max-h-[calc(100vh-16rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
-          {filteredCards.map((card) => (
-            <li
-              key={card.id}
-              className={`py-3 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
-                card.value
-              )}`}
+            ))}
+          </div>
+        ) : filteredCards.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
+            <p className="text-gray-500 text-lg mb-4">No cards found matching your criteria</p>
+            <Link
+              href={`/add?name=${encodeURIComponent(searchQuery)}`}
+              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
             >
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div className="text-base font-medium text-gray-700 capitalize font-sans truncate max-w-[200px] sm:max-w-none">
-                  {card.name.toLowerCase().split(' ').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
-                <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
-                  <div
-                    className={`font-medium px-2 py-1 rounded-full ${getBadgeStyle(
-                      card.value
-                    )}`}
-                  >
-                    {card.value.toFixed(2)}
+              Add New Card
+            </Link>
+          </div>
+        ) : (
+          <ul className="space-y-4 overflow-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
+            {filteredCards.map((card) => (
+              <li
+                key={card.id}
+                className={`py-3 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
+                  card.value
+                )}`}
+              >
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="text-base font-medium text-gray-700 capitalize font-sans truncate max-w-[200px] sm:max-w-none">
+                    {card.name.toLowerCase().split(' ').map(word => 
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ')}
                   </div>
-                  <span className="font-normal">
-                    {new Date(card.updatedAt).toLocaleDateString()}
-                  </span>
                 </div>
-                <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                <div className="flex gap-3">
-                  <Link
-                    href={`/edit/${card.id}`}
-                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-sans hover:underline"
-                    aria-label={`Edit ${card.name}`}
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => deleteCard(card.id)}
-                    onKeyPress={(e) => handleKeyPress(e, () => deleteCard(card.id))}
-                    className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-sans hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={deleteState.isDeleting && deleteState.id === card.id}
-                    aria-label={`Delete ${card.name}`}
-                  >
-                    {deleteState.isDeleting && deleteState.id === card.id ? 'Deleting...' : 'Delete'}
-                  </button>
+                
+                <div className="flex items-center gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
+                    <div
+                      className={`font-medium px-2 py-1 rounded-full ${getBadgeStyle(
+                        card.value
+                      )}`}
+                    >
+                      {card.value.toFixed(2)}
+                    </div>
+                    <span className="font-normal">
+                      {new Date(card.updatedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                  <div className="flex gap-3">
+                    <Link
+                      href={`/edit/${card.id}`}
+                      className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-sans hover:underline"
+                      aria-label={`Edit ${card.name}`}
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => deleteCard(card.id)}
+                      onKeyPress={(e) => handleKeyPress(e, () => deleteCard(card.id))}
+                      className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-sans hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={deleteState.isDeleting && deleteState.id === card.id}
+                      aria-label={`Delete ${card.name}`}
+                    >
+                      {deleteState.isDeleting && deleteState.id === card.id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {deleteState.error && (
         <div className="fixed bottom-4 right-4 bg-rose-100 text-rose-700 px-4 py-2 rounded-lg shadow-lg border border-rose-200 animate-fade-in">
           {deleteState.error}
         </div>
       )}
-    </main>
+    </div>
   );
 }
