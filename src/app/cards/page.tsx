@@ -173,7 +173,13 @@ export default function CardList() {
         </div>
       ) : filteredCards.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
-          <p className="text-gray-500 text-lg">No cards found matching your criteria</p>
+          <p className="text-gray-500 text-lg mb-4">No cards found matching your criteria</p>
+          <Link
+            href={`/add?name=${encodeURIComponent(searchQuery)}`}
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Add New Card
+          </Link>
         </div>
       ) : (
         <ul className="space-y-4 overflow-auto max-h-[calc(100vh-16rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">

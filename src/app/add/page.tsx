@@ -1,12 +1,20 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AddCard() {
   const [name, setName] = useState("");
   const [value, setValue] = useState(0.5);
   const [customValue, setCustomValue] = useState<number | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const nameParam = searchParams.get('name');
+    if (nameParam) {
+      setName(nameParam);
+    }
+  }, [searchParams]);
 
   const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = parseFloat(e.target.value);
