@@ -38,7 +38,7 @@ export default function CardList() {
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(true);
   const [deleteState, setDeleteState] = useState<DeleteState>({
     id: null,
     isDeleting: false,
