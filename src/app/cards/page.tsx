@@ -183,7 +183,7 @@ export default function CardList() {
             </Link>
           </div>
         ) : (
-          <ul className="space-y-4 overflow-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
+          <ul className="space-y-4 overflow-auto h-full scrollbar-thin scrollbar-thumb-gray-300/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-400/50 pr-2">
             {filteredCards.map((card) => (
               <li
                 key={card.id}
