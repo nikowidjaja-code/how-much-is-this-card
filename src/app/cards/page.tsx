@@ -38,6 +38,7 @@ export default function CardList() {
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
   const [deleteState, setDeleteState] = useState<DeleteState>({
     id: null,
     isDeleting: false,
@@ -92,7 +93,51 @@ export default function CardList() {
   return (
     <div className="h-full flex flex-col">
       <div className="py-4 flex-none">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">All Cards</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-bold text-gray-800">All Cards</h1>
+          <button
+            onClick={() => setIsStatsExpanded(!isStatsExpanded)}
+            className="sm:hidden inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            aria-expanded={isStatsExpanded}
+            aria-controls="stats-section"
+          >
+            <span>{isStatsExpanded ? 'Hide Stats' : 'Show Stats'}</span>
+            <span className={`transform transition-transform duration-200 ${isStatsExpanded ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
+          </button>
+        </div>
+
+        <div 
+          id="stats-section"
+          className={`grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out ${
+            isStatsExpanded ? 'max-h-[200px] opacity-100' : 'max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible'
+          }`}
+        >
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-sm text-gray-500 mb-1">Total Cards</div>
+            <div className="text-2xl font-bold text-gray-800">{cards.length}</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-sm text-gray-500 mb-1">Low Value</div>
+            <div className="text-2xl font-bold text-emerald-600">
+              {cards.filter(card => card.value <= 0.25).length}
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-sm text-gray-500 mb-1">Mid Value</div>
+            <div className="text-2xl font-bold text-amber-600">
+              {cards.filter(card => card.value === 0.5).length}
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-sm text-gray-500 mb-1">High Value</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {cards.filter(card => card.value >= 0.75).length}
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-full sm:w-64">
             <input
@@ -173,13 +218,16 @@ export default function CardList() {
             ))}
           </div>
         ) : filteredCards.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
-            <p className="text-gray-500 text-lg mb-4">No cards found matching your criteria</p>
+          <div className="h-full flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border p-8">
+            <div className="text-6xl mb-4">🔍</div>
+            <p className="text-gray-500 text-lg mb-2">No cards found matching your criteria</p>
+            <p className="text-gray-400 text-sm mb-6">Try adjusting your search or filters</p>
             <Link
               href={`/add?name=${encodeURIComponent(searchQuery)}`}
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
             >
-              Add New Card
+              <span>➕</span>
+              <span>Add New Card</span>
             </Link>
           </div>
         ) : (
@@ -187,7 +235,7 @@ export default function CardList() {
             {filteredCards.map((card) => (
               <li
                 key={card.id}
-                className={`py-3 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
+                className={`py-4 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
                   card.value
                 )}`}
               >
@@ -202,7 +250,7 @@ export default function CardList() {
                 <div className="flex items-center gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
                   <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
                     <div
-                      className={`font-medium px-2 py-1 rounded-full ${getBadgeStyle(
+                      className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
                         card.value
                       )}`}
                     >
