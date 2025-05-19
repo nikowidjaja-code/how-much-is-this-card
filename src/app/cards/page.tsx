@@ -164,7 +164,7 @@ export default function CardList() {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-96">
             <input
               ref={searchInputRef}
               type="text"
