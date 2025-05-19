@@ -124,12 +124,12 @@ export default function CardList() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="py-4 flex-none">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800">All Cards</h1>
+      <div className="py-2 sm:py-4 flex-none">
+        <div className="flex justify-between items-center mb-2 sm:mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Cards</h1>
           <button
             onClick={() => setIsStatsExpanded(!isStatsExpanded)}
-            className="sm:hidden inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
             aria-expanded={isStatsExpanded}
             aria-controls="stats-section"
           >
@@ -142,43 +142,43 @@ export default function CardList() {
 
         <div 
           id="stats-section"
-          className={`grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out ${
-            isStatsExpanded ? 'max-h-[200px] opacity-100' : 'max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible'
-          }`}
+          className={`grid grid-cols-4 gap-2 sm:gap-4 mb-2 sm:mb-6 transition-all duration-300 ease-in-out ${
+            isStatsExpanded ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+          } sm:landscape:max-h-[200px] max-sm:landscape:!max-h-[500px] max-sm:landscape:!opacity-100 max-sm:landscape:!overflow-visible`}
         >
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Total Cards</div>
-            <div className="text-2xl font-bold text-gray-800">{cards.length}</div>
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-0.5 sm:mb-1">Total Cards</div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-800">{cards.length}</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Low Value</div>
-            <div className="text-2xl font-bold text-emerald-600">
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-0.5 sm:mb-1">Low Value</div>
+            <div className="text-lg sm:text-2xl font-bold text-emerald-600">
               {cards.filter(card => card.value <= 0.25).length}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Mid Value</div>
-            <div className="text-2xl font-bold text-amber-600">
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-0.5 sm:mb-1">Mid Value</div>
+            <div className="text-lg sm:text-2xl font-bold text-amber-600">
               {cards.filter(card => card.value === 0.5).length}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">High Value</div>
-            <div className="text-2xl font-bold text-orange-600">
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-0.5 sm:mb-1">High Value</div>
+            <div className="text-lg sm:text-2xl font-bold text-orange-600">
               {cards.filter(card => card.value >= 0.75).length}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="relative w-full sm:w-96">
+        <div className="grid grid-cols-1 max-sm:landscape:grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+          <div className="relative w-full">
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search by name... (Ctrl+F)"
+              placeholder="Search... (Ctrl+F)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               aria-label="Search cards"
             />
           </div>
@@ -189,7 +189,7 @@ export default function CardList() {
               const val = e.target.value;
               setValueFilter(val === "all" ? "all" : parseFloat(val));
             }}
-            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             aria-label="Filter by value"
           >
             <option value="all">All Values</option>
@@ -205,17 +205,17 @@ export default function CardList() {
             onChange={(e) =>
               setSortBy(e.target.value as "updatedAt" | "name" | "value")
             }
-            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             aria-label="Sort by"
           >
-            <option value="updatedAt">Recently Modified</option>
-            <option value="name">Alphabetical</option>
+            <option value="updatedAt">Recent</option>
+            <option value="name">Name</option>
             <option value="value">Value</option>
           </select>
 
           <button
             onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full landscape:w-11 sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             title={order === "asc" ? "Ascending" : "Descending"}
             aria-label={`Sort ${order === "asc" ? "ascending" : "descending"}`}
           >
@@ -224,7 +224,7 @@ export default function CardList() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden max-sm:landscape:hidden">
         {loading ? (
           <div className="space-y-4" role="status" aria-label="Loading cards">
             {[...Array(5)].map((_, index) => (
@@ -321,6 +321,13 @@ export default function CardList() {
         )}
       </div>
 
+      <div className="hidden max-sm:landscape:flex max-sm:landscape:flex-1 max-sm:landscape:items-center max-sm:landscape:justify-center">
+        <div className="text-center text-gray-500">
+          <p className="text-lg mb-2">Please rotate your device</p>
+          <p className="text-sm">For a better viewing experience of the cards list</p>
+        </div>
+      </div>
+
       {/* Keyboard Shortcuts Help */}
       <div className="fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm hidden lg:block">
         <h3 className="font-semibold mb-2">Keyboard Shortcuts:</h3>
@@ -337,6 +344,15 @@ export default function CardList() {
           {deleteState.error}
         </div>
       )}
+
+      {/* Landscape Warning */}
+      <div className="hidden max-lg:landscape:flex fixed inset-0 bg-black/70 z-50 items-center justify-center text-white">
+        <div className="text-center px-4">
+          <div className="text-4xl mb-3">📱</div>
+          <p className="text-lg font-semibold mb-2">Please rotate your device</p>
+          <p className="text-sm opacity-80">For a better viewing experience</p>
+        </div>
+      </div>
     </div>
   );
 }
