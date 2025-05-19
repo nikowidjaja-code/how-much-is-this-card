@@ -108,6 +108,13 @@ export default function CardList() {
     );
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   useKeyboardShortcuts({
     onSearch: handleSearch,
     onSort: handleSort,
