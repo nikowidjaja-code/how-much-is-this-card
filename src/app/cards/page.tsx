@@ -170,7 +170,7 @@ export default function CardList() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 max-sm:landscape:grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+        <div className="grid grid-cols-1 max-sm:landscape:grid-cols-4 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto] gap-2 sm:gap-4">
           <div className="relative w-full">
             <input
               ref={searchInputRef}
