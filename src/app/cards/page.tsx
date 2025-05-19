@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface Card {
   id: string;
@@ -39,6 +40,8 @@ export default function CardList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [isStatsExpanded, setIsStatsExpanded] = useState(true);
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [deleteState, setDeleteState] = useState<DeleteState>({
     id: null,
     isDeleting: false,
@@ -83,12 +86,34 @@ export default function CardList() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      action();
-    }
+  const handleSearch = () => {
+    searchInputRef.current?.focus();
   };
+
+  const handleSort = () => {
+    setOrder(order === "asc" ? "desc" : "asc");
+  };
+
+  const handleNavigateNext = () => {
+    if (filteredCards.length === 0) return;
+    setSelectedCardIndex(prev => 
+      prev === filteredCards.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const handleNavigatePrev = () => {
+    if (filteredCards.length === 0) return;
+    setSelectedCardIndex(prev => 
+      prev <= 0 ? filteredCards.length - 1 : prev - 1
+    );
+  };
+
+  useKeyboardShortcuts({
+    onSearch: handleSearch,
+    onSort: handleSort,
+    onNavigateNext: handleNavigateNext,
+    onNavigatePrev: handleNavigatePrev,
+  });
 
   return (
     <div className="h-full flex flex-col">
@@ -141,8 +166,9 @@ export default function CardList() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-full sm:w-64">
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search by name..."
+              placeholder="Search by name... (Ctrl+F)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -232,12 +258,14 @@ export default function CardList() {
           </div>
         ) : (
           <ul className="space-y-4 overflow-auto h-full scrollbar-thin scrollbar-thumb-gray-300/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-400/50 pr-2">
-            {filteredCards.map((card) => (
+            {filteredCards.map((card, index) => (
               <li
                 key={card.id}
                 className={`py-4 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
                   card.value
-                )}`}
+                )} ${selectedCardIndex === index ? 'ring-2 ring-blue-500' : ''}`}
+                tabIndex={0}
+                onFocus={() => setSelectedCardIndex(index)}
               >
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <div className="text-base font-medium text-gray-700 capitalize font-sans truncate max-w-[200px] sm:max-w-none">
@@ -284,6 +312,17 @@ export default function CardList() {
             ))}
           </ul>
         )}
+      </div>
+
+      {/* Keyboard Shortcuts Help */}
+      <div className="fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm hidden sm:block">
+        <h3 className="font-semibold mb-2">Keyboard Shortcuts:</h3>
+        <ul className="space-y-1 text-gray-600">
+          <li>⌘/Ctrl + A: Add new card</li>
+          <li>⌘/Ctrl + F: Focus search</li>
+          <li>⌘/Ctrl + S: Toggle sort order</li>
+          <li>↑/↓: Navigate cards</li>
+        </ul>
       </div>
 
       {deleteState.error && (
