@@ -4,16 +4,18 @@ import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navigation() {
   const { data: session, status } = useSession();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const isLoading = status === "loading";
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSignIn = () => {
-    setIsTransitioning(true);
-    signIn();
+    router.push("/login");
   };
 
   const handleSignOut = () => {
@@ -21,22 +23,55 @@ export default function Navigation() {
     signOut();
   };
 
+  const handleBack = () => {
+    if (window.history.length > 2) {
+      router.back();
+    } else {
+      router.push("/cards");
+    }
+  };
+
   return (
     <nav className="max-w-3xl mx-auto flex justify-between items-center px-2 sm:px-4 py-3 text-base sm:text-lg font-semibold">
       <div className="flex gap-3 sm:gap-6">
-        <Link href="/cards" className="hover:text-blue-600">
-          🃏 Cards
-        </Link>
-        <Link href="/add" className="hover:text-green-600">
-          ➕ Add
-        </Link>
+        {pathname === "/login" ? (
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all duration-200 group"
+          >
+            <svg
+              className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span className="font-medium">Back to Cards</span>
+          </button>
+        ) : (
+          <>
+            <Link href="/cards" className="hover:text-blue-600">
+              🃏 Cards
+            </Link>
+            <Link href="/add" className="hover:text-green-600">
+              ➕ Add
+            </Link>
+          </>
+        )}
       </div>
       <div>
         {isLoading && !isTransitioning ? (
           <div className="w-16 h-4 bg-gray-200 rounded animate-pulse" />
         ) : isTransitioning ? (
           <div className="text-sm text-gray-500">Redirecting...</div>
-        ) : !session ? (
+        ) : !session && pathname !== "/login" ? (
           <button
             onClick={handleSignIn}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
@@ -57,7 +92,7 @@ export default function Navigation() {
             </svg>
             Sign In
           </button>
-        ) : (
+        ) : session ? (
           <div className="flex items-center gap-2">
             <div
               className="relative"
@@ -107,7 +142,7 @@ export default function Navigation() {
               Sign Out
             </button>
           </div>
-        )}
+        ) : null}
       </div>
     </nav>
   );
