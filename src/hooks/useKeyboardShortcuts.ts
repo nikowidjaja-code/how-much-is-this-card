@@ -24,12 +24,6 @@ export const useKeyboardShortcuts = ({
         isMetaPressed.current = true;
       }
 
-      // Add new card: Cmd/Ctrl + A
-      if (isMetaPressed.current && e.key === 'a') {
-        e.preventDefault();
-        router.push('/add');
-      }
-
       // Focus search: Cmd/Ctrl + F
       if (isMetaPressed.current && e.key === 'f' && onSearch) {
         e.preventDefault();

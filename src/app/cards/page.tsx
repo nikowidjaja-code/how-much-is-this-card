@@ -332,7 +332,6 @@ export default function CardList() {
       <div className="fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm hidden lg:block">
         <h3 className="font-semibold mb-2">Keyboard Shortcuts:</h3>
         <ul className="space-y-1 text-gray-600">
-          <li>⌘/Ctrl + A: Add new card</li>
           <li>⌘/Ctrl + F: Focus search</li>
           <li>⌘/Ctrl + S: Toggle sort order</li>
           <li>↑/↓: Navigate cards</li>
