@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full mx-auto">
         <div className="bg-white p-8 rounded-2xl shadow-xl space-y-6 border border-gray-100">
           <div className="text-center">
