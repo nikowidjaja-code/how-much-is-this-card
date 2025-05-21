@@ -1,5 +1,6 @@
-import 'styles/globals.css';
-import Navigation from '@/components/Navigation';
+import "styles/globals.css";
+import Navigation from "@/components/Navigation";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "CUE Card Vault",
@@ -25,14 +26,16 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="h-full bg-gray-100 text-gray-900 font-sans">
-        <div className="h-full flex flex-col">
-          <header className="bg-white shadow sticky top-0 z-10">
-            <Navigation />
-          </header>
-          <main className="flex-1 overflow-hidden max-w-3xl mx-auto w-full px-4 sm:px-6">
-            {children}
-          </main>
-        </div>
+        <Providers>
+          <div className="h-full flex flex-col">
+            <header className="bg-white shadow sticky top-0 z-10">
+              <Navigation />
+            </header>
+            <main className="flex-1 overflow-hidden max-w-3xl mx-auto w-full px-4 sm:px-6">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
