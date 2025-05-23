@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VotePanelProps {
   cardId: string;
@@ -12,6 +19,15 @@ interface VoteDistribution {
   [key: number]: number;
 }
 
+interface Vote {
+  user: {
+    name: string;
+    email: string;
+    image?: string;
+  };
+  value: number;
+}
+
 export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const { data: session } = useSession();
   const [isVoting, setIsVoting] = useState(false);
@@ -19,7 +35,30 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const [voteDistribution, setVoteDistribution] = useState<VoteDistribution>(
     {}
   );
+  const [votes, setVotes] = useState<Vote[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      try {
+        const response = await fetch(`/api/cards/${cardId}/vote`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch votes");
+        }
+
+        const data = await response.json();
+        setVoteDistribution(data.voteDistribution);
+        setVotes(data.votes);
+      } catch (err) {
+        console.error("Error fetching votes:", err);
+      }
+    };
+
+    fetchVotes();
+  }, [cardId]);
 
   const handleVote = async (value: number) => {
     if (!session) {
@@ -46,6 +85,7 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
 
       const data = await response.json();
       setVoteDistribution(data.voteDistribution);
+      setVotes(data.votes);
       toast({
         title: "Vote recorded",
         description: `Your vote of ${value} has been recorded.`,
@@ -70,6 +110,29 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
         return value.toString();
     }
   };
+
+  const getVoteColor = (value: number) => {
+    switch (value) {
+      case 0.25:
+        return "bg-emerald-500";
+      case 0.5:
+        return "bg-amber-500";
+      case 1:
+        return "bg-blue-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const calculatePercentage = (count: number, total: number) => {
+    if (total === 0) return 0;
+    return Math.round((count / total) * 100);
+  };
+
+  const totalVotes = Object.values(voteDistribution).reduce(
+    (sum, count) => sum + count,
+    0
+  );
 
   return (
     <div className="px-8 py-2 space-y-3">
@@ -108,24 +171,101 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           High (1.0)
         </Button>
       </div>
-      {Object.keys(voteDistribution).length > 0 && (
+      {totalVotes > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200">
-          <h4 className="text-sm font-medium text-gray-700 mb-2 font-['Trebuchet_MS']">
-            Vote Distribution
-          </h4>
-          <div className="space-y-1">
-            {Object.entries(voteDistribution).map(([value, count]) => (
-              <div
-                key={value}
-                className="flex justify-between text-sm text-gray-600 font-['Trebuchet_MS']"
-              >
-                <span>{getVoteLabel(Number(value))}</span>
-                <span>
-                  {count} vote{count !== 1 ? "s" : ""}
-                </span>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {Object.entries(voteDistribution).map(([value, count]) => {
+              const percentage = calculatePercentage(count, totalVotes);
+              return (
+                <div key={value} className="space-y-1">
+                  <div className="flex justify-between text-sm font-['Trebuchet_MS']">
+                    <span className="text-gray-700">
+                      {getVoteLabel(Number(value))}
+                    </span>
+                    <span className="text-gray-500">{percentage}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${getVoteColor(
+                        Number(value)
+                      )} transition-all duration-500 ease-out`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
+          {votes.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <div className="text-sm font-medium text-gray-700 font-['Trebuchet_MS']">
+                Votes:
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {votes.map((vote, index) => (
+                  <TooltipProvider key={index}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="relative group focus:outline-none"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // The tooltip will show on hover by default
+                            // and stay open on click
+                          }}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-full overflow-hidden border-2 ${
+                              vote.value === 0.25
+                                ? "border-emerald-500"
+                                : vote.value === 0.5
+                                ? "border-amber-500"
+                                : "border-blue-500"
+                            }`}
+                          >
+                            {vote.user.image ? (
+                              <Image
+                                src={vote.user.image}
+                                alt={vote.user.name}
+                                width={32}
+                                height={32}
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                                {vote.user.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        className="font-['Trebuchet_MS']"
+                        side="bottom"
+                        align="center"
+                      >
+                        <p className="font-medium">{vote.user.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {vote.user.email}
+                        </p>
+                        <p
+                          className={`text-sm ${
+                            vote.value === 0.25
+                              ? "text-emerald-600"
+                              : vote.value === 0.5
+                              ? "text-amber-600"
+                              : "text-blue-600"
+                          }`}
+                        >
+                          Voted: {getVoteLabel(vote.value)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

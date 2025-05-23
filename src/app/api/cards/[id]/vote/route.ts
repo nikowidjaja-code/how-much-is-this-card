@@ -5,6 +5,52 @@ import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Get all votes for this card, including votes from all users
+    const votes = await prisma.vote.findMany({
+      where: { cardId: params.id },
+      include: {
+        user: {
+          select: {
+            email: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    // Count votes per value
+    const voteCounts = votes.reduce((acc: { [key: number]: number }, vote) => {
+      acc[vote.value] = (acc[vote.value] || 0) + 1;
+      return acc;
+    }, {});
+
+    return NextResponse.json({
+      success: true,
+      voteDistribution: voteCounts,
+      votes: votes.map((v) => ({
+        value: v.value,
+        user: v.user,
+        updatedAt: v.updatedAt,
+      })),
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching votes:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
+    return NextResponse.json(
+      { error: "Failed to fetch votes" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -59,6 +105,8 @@ export async function POST(
         user: {
           select: {
             email: true,
+            name: true,
+            image: true,
           },
         },
       },
@@ -76,16 +124,8 @@ export async function POST(
       .filter(([_, count]) => count === maxVotes)
       .map(([value]) => Number(value));
 
-    // If there's a tie, use the most recent vote among the tied values
-    let finalValue = mostVotedValues[0];
-    if (mostVotedValues.length > 1) {
-      const mostRecentVote = votes.find((vote) =>
-        mostVotedValues.includes(vote.value)
-      );
-      if (mostRecentVote) {
-        finalValue = mostRecentVote.value;
-      }
-    }
+    // If there's a tie, use the highest value among the tied values
+    let finalValue = Math.max(...mostVotedValues);
 
     // Update card value
     await prisma.card.update({
@@ -101,7 +141,7 @@ export async function POST(
       finalValue,
       votes: votes.map((v) => ({
         value: v.value,
-        userEmail: v.user.email,
+        user: v.user,
         updatedAt: v.updatedAt,
       })),
     });
