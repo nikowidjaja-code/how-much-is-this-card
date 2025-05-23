@@ -26,6 +26,8 @@ interface DeleteState {
 }
 
 const getCardStyle = (value: number) => {
+  if (value === -1)
+    return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-md transition-all duration-200";
   if (value <= 0.25)
     return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 hover:shadow-md transition-all duration-200";
   if (value === 0.5)
@@ -38,6 +40,7 @@ const getCardStyle = (value: number) => {
 };
 
 const getBadgeStyle = (value: number) => {
+  if (value === -1) return "bg-gray-100/80 text-gray-700 font-medium shadow-sm";
   if (value <= 0.25)
     return "bg-emerald-100/80 text-emerald-700 font-medium shadow-sm";
   if (value === 0.5)
@@ -99,7 +102,7 @@ export default function CardList() {
         [cardId]: { isVoting: false, error: "Please sign in to vote" },
       }));
       return;
-    }    
+    }
 
     setVotingStates((prev) => ({
       ...prev,
@@ -356,7 +359,9 @@ export default function CardList() {
                             card.value
                           )}`}
                         >
-                          {card.value.toFixed(2)}
+                          {card.value === -1
+                            ? "Unvalued"
+                            : card.value.toFixed(2)}
                         </div>
                         <span className="font-normal">
                           {new Date(card.updatedAt).toLocaleDateString()}

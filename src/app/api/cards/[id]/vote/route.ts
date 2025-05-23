@@ -30,6 +30,8 @@ export async function GET(
       return acc;
     }, {});
 
+    console.log("Vote counts:", voteCounts);
+
     return NextResponse.json({
       success: true,
       voteDistribution: voteCounts,
@@ -118,14 +120,21 @@ export async function POST(
       return acc;
     }, {});
 
+    console.log("Vote counts:", voteCounts);
+
     // Find the most voted value(s)
     const maxVotes = Math.max(...Object.values(voteCounts));
     const mostVotedValues = Object.entries(voteCounts)
       .filter(([_, count]) => count === maxVotes)
       .map(([value]) => Number(value));
 
-    // If there's a tie, use the highest value among the tied values
-    let finalValue = Math.max(...mostVotedValues);
+    console.log("Max votes:", maxVotes);
+    console.log("Most voted values:", mostVotedValues);
+
+    // If there's an exact tie (same number of votes), set value to -1
+    let finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
+
+    console.log("Final value:", finalValue);
 
     // Update card value
     await prisma.card.update({
@@ -137,7 +146,7 @@ export async function POST(
       success: true,
       vote,
       voteDistribution: voteCounts,
-      mostVotedValues,
+      mostVotedValues: mostVotedValues,
       finalValue,
       votes: votes.map((v) => ({
         value: v.value,
