@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { VotePanel } from "@/components/VotePanel";
+import { log } from "console";
 
 interface Card {
   id: string;
@@ -98,7 +99,7 @@ export default function CardList() {
         [cardId]: { isVoting: false, error: "Please sign in to vote" },
       }));
       return;
-    }
+    }    
 
     setVotingStates((prev) => ({
       ...prev,
