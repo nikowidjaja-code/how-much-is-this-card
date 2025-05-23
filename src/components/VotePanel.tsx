@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatDistanceToNow } from 'date-fns';
 
 interface VotePanelProps {
   cardId: string;
@@ -26,6 +27,7 @@ interface Vote {
     image?: string;
   };
   value: number;
+  updatedAt: string;
 }
 
 export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
@@ -134,6 +136,17 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
     0
   );
 
+  const formatTimeAgo = (date: string) => {
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+
+  const getVotePercentage = (value: number, totalVotes: number) => {
+    const count = Object.entries(voteDistribution)
+      .filter(([v]) => Number(v) === value)
+      .reduce((sum, [_, count]) => sum + count, 0);
+    return Math.round((count / totalVotes) * 100);
+  };
+
   return (
     <div className="px-8 py-2 space-y-3">
       {error && (
@@ -240,25 +253,60 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent
-                        className="font-['Trebuchet_MS']"
+                        className="font-['Trebuchet_MS'] p-4 space-y-2"
                         side="bottom"
                         align="center"
                       >
-                        <p className="font-medium">{vote.user.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {vote.user.email}
-                        </p>
-                        <p
-                          className={`text-sm ${
-                            vote.value === 0.25
-                              ? "text-emerald-600"
-                              : vote.value === 0.5
-                              ? "text-amber-600"
-                              : "text-blue-600"
-                          }`}
-                        >
-                          Voted: {getVoteLabel(vote.value)}
-                        </p>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full overflow-hidden border-2 ${
+                            vote.value === 0.25 ? 'border-emerald-500' :
+                            vote.value === 0.5 ? 'border-amber-500' :
+                            'border-blue-500'
+                          }`}>
+                            {vote.user.image ? (
+                              <Image
+                                src={vote.user.image}
+                                alt={vote.user.name}
+                                width={40}
+                                height={40}
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                {vote.user.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium">{vote.user.name}</p>
+                            <p className="text-xs text-gray-500">{vote.user.email}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className={`inline-block w-2 h-2 rounded-full ${
+                            vote.value === 0.25 ? 'bg-emerald-500' :
+                            vote.value === 0.5 ? 'bg-amber-500' :
+                            'bg-blue-500'
+                          }`} />
+                          <span className={`font-medium ${
+                            vote.value === 0.25 ? 'text-emerald-600' :
+                            vote.value === 0.5 ? 'text-amber-600' :
+                            'text-blue-600'
+                          }`}>
+                            {getVoteLabel(vote.value)}
+                          </span>
+                          <span className="text-gray-500">
+                            ({getVotePercentage(vote.value, totalVotes)}% of votes)
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {formatTimeAgo(vote.updatedAt)}
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
