@@ -1,16 +1,25 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface VotePanelProps {
   cardId: string;
   onVoteSuccess?: () => void;
 }
 
+interface VoteDistribution {
+  [key: number]: number;
+}
+
 export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const { data: session } = useSession();
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [voteDistribution, setVoteDistribution] = useState<VoteDistribution>(
+    {}
+  );
+  const { toast } = useToast();
 
   const handleVote = async (value: number) => {
     if (!session) {
@@ -30,17 +39,35 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
         body: JSON.stringify({ value }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.error || "Failed to vote");
       }
 
+      const data = await response.json();
+      setVoteDistribution(data.voteDistribution);
+      toast({
+        title: "Vote recorded",
+        description: `Your vote of ${value} has been recorded.`,
+      });
       onVoteSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to vote");
     } finally {
       setIsVoting(false);
+    }
+  };
+
+  const getVoteLabel = (value: number) => {
+    switch (value) {
+      case 0.25:
+        return "Low";
+      case 0.5:
+        return "Mid";
+      case 1:
+        return "High";
+      default:
+        return value.toString();
     }
   };
 
@@ -81,6 +108,26 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           High (1.0)
         </Button>
       </div>
+      {Object.keys(voteDistribution).length > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <h4 className="text-sm font-medium text-gray-700 mb-2 font-['Trebuchet_MS']">
+            Vote Distribution
+          </h4>
+          <div className="space-y-1">
+            {Object.entries(voteDistribution).map(([value, count]) => (
+              <div
+                key={value}
+                className="flex justify-between text-sm text-gray-600 font-['Trebuchet_MS']"
+              >
+                <span>{getVoteLabel(Number(value))}</span>
+                <span>
+                  {count} vote{count !== 1 ? "s" : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

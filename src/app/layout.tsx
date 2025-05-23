@@ -1,6 +1,7 @@
 import "styles/globals.css";
 import Navigation from "@/components/Navigation";
 import Providers from "@/components/Providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
   title: "CUE Card Vault",
@@ -35,6 +36,7 @@ export default function RootLayout({
               {children}
             </main>
           </div>
+          <Toaster />
         </Providers>
       </body>
     </html>

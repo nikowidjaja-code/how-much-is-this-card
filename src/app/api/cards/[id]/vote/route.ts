@@ -34,7 +34,7 @@ export async function POST(
       },
     });
 
-    // Create or update vote
+    // Create or update vote for this user
     const vote = await prisma.vote.upsert({
       where: {
         cardId_userId: {
@@ -52,24 +52,59 @@ export async function POST(
       },
     });
 
-    // Calculate new average value for the card
+    // Get all votes for this card, including votes from all users
     const votes = await prisma.vote.findMany({
       where: { cardId: params.id },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
     });
 
-    const averageValue =
-      votes.reduce(
-        (acc: number, vote: { value: number }) => acc + vote.value,
-        0
-      ) / votes.length;
+    // Count votes per value
+    const voteCounts = votes.reduce((acc: { [key: number]: number }, vote) => {
+      acc[vote.value] = (acc[vote.value] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Find the most voted value(s)
+    const maxVotes = Math.max(...Object.values(voteCounts));
+    const mostVotedValues = Object.entries(voteCounts)
+      .filter(([_, count]) => count === maxVotes)
+      .map(([value]) => Number(value));
+
+    // If there's a tie, use the most recent vote among the tied values
+    let finalValue = mostVotedValues[0];
+    if (mostVotedValues.length > 1) {
+      const mostRecentVote = votes.find((vote) =>
+        mostVotedValues.includes(vote.value)
+      );
+      if (mostRecentVote) {
+        finalValue = mostRecentVote.value;
+      }
+    }
 
     // Update card value
     await prisma.card.update({
       where: { id: params.id },
-      data: { value: averageValue },
+      data: { value: finalValue },
     });
 
-    return NextResponse.json({ success: true, vote });
+    return NextResponse.json({
+      success: true,
+      vote,
+      voteDistribution: voteCounts,
+      mostVotedValues,
+      finalValue,
+      votes: votes.map((v) => ({
+        value: v.value,
+        userEmail: v.user.email,
+        updatedAt: v.updatedAt,
+      })),
+    });
   } catch (error) {
     console.error(
       "Vote error:",
