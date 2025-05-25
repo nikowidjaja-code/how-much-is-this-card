@@ -52,18 +52,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { name, value } = await req.json();
-    if (
-      !name ||
-      typeof name !== "string" ||
-      !value ||
-      typeof value !== "number"
-    ) {
+    const { name } = await req.json();
+    if (!name || typeof name !== "string") {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
     const card = await prisma.card.create({
-      data: { name, value },
+      data: {
+        name,
+        value: -1, // Default value for unvalued cards
+      },
     });
 
     return NextResponse.json(card, { status: 201 });

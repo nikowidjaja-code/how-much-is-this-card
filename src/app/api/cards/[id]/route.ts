@@ -23,9 +23,16 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Delete all votes for this card first
+    await prisma.vote.deleteMany({
+      where: { cardId: params.id },
+    });
+
+    // Then delete the card
     await prisma.card.delete({
       where: { id: params.id },
     });
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Delete error:", err);
@@ -54,12 +61,14 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { name, value } = await req.json();
-    const id = params.id;
+    const { name } = await req.json();
+    if (!name || typeof name !== "string") {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    }
 
     await prisma.card.update({
-      where: { id },
-      data: { name, value },
+      where: { id: params.id },
+      data: { name },
     });
 
     return NextResponse.json({ success: true });
