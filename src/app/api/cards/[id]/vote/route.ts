@@ -19,27 +19,94 @@ export async function GET(
             email: true,
             name: true,
             image: true,
+            role: true,
           },
         },
       },
     });
 
-    // Count votes per value
-    const voteCounts = votes.reduce((acc: { [key: number]: number }, vote) => {
-      acc[vote.value] = (acc[vote.value] || 0) + 1;
-      return acc;
-    }, {});
+    // Calculate weighted votes
+    const weightedVotes = votes.map((vote) => {
+      // 1. Role-Based Weight
+      const roleWeight = vote.user.role === "ADMIN" ? 5 : 1;
 
-    console.log("Vote counts:", voteCounts);
+      // 2. Time-Based Decay
+      const daysSinceVote = Math.floor(
+        (Date.now() - new Date(vote.updatedAt).getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+
+      let timeWeight = 1;
+      if (daysSinceVote <= 7) {
+        timeWeight = 1 - daysSinceVote / 14; // 7 days = 0.5
+      } else if (daysSinceVote <= 14) {
+        timeWeight = 0.5 - (daysSinceVote - 7) / 28; // 14 days = 0.25
+      } else if (daysSinceVote <= 30) {
+        timeWeight = 0.25 - (daysSinceVote - 14) / 160; // 30 days = ~0.1
+      } else {
+        timeWeight = 0.1;
+      }
+
+      // Clamp minimum weight
+      timeWeight = Math.max(timeWeight, 0.1);
+
+      // 3. Final Score
+      const finalVoteScore = roleWeight * timeWeight * vote.value;
+
+      return {
+        ...vote,
+        weightedValue: finalVoteScore,
+        roleWeight,
+        timeWeight,
+        daysSinceVote,
+      };
+    });
+
+    // Group votes by their original value and sum their weighted values
+    const voteGroups = weightedVotes.reduce(
+      (acc: { [key: number]: number }, vote) => {
+        acc[vote.value] = (acc[vote.value] || 0) + vote.weightedValue;
+        return acc;
+      },
+      {}
+    );
+
+    // Count raw votes per value
+    const rawVoteCounts = votes.reduce(
+      (acc: { [key: number]: number }, vote) => {
+        acc[vote.value] = (acc[vote.value] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
+    // Find the value with the highest weighted sum
+    const maxWeightedSum = Math.max(...Object.values(voteGroups));
+    const mostVotedValues = Object.entries(voteGroups)
+      .filter(([_, sum]) => sum === maxWeightedSum)
+      .map(([value]) => Number(value));
+
+    // If there's an exact tie (same weighted sum), set value to -1
+    let finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
 
     return NextResponse.json({
       success: true,
-      voteDistribution: voteCounts,
-      votes: votes.map((v) => ({
+      voteDistribution: voteGroups,
+      rawVoteCounts,
+      voteDetails: weightedVotes.map((v) => ({
         value: v.value,
         user: v.user,
         updatedAt: v.updatedAt,
+        weightedValue: v.weightedValue,
+        roleWeight: v.roleWeight,
+        timeWeight: v.timeWeight,
+        daysSinceVote: v.daysSinceVote,
       })),
+      finalValue,
+      mostVotedValues,
+      maxWeightedSum,
+      voteCount: votes.length,
+      weightedVoteCount: Object.values(voteGroups).reduce((a, b) => a + b, 0),
     });
   } catch (error) {
     console.error(
@@ -109,31 +176,67 @@ export async function POST(
             email: true,
             name: true,
             image: true,
+            role: true,
           },
         },
       },
     });
 
-    // Count votes per value
-    const voteCounts = votes.reduce((acc: { [key: number]: number }, vote) => {
-      acc[vote.value] = (acc[vote.value] || 0) + 1;
-      return acc;
-    }, {});
+    // Calculate weighted votes
+    const weightedVotes = votes.map((vote) => {
+      // 1. Role-Based Weight
+      const roleWeight = vote.user.role === "ADMIN" ? 5 : 1;
 
-    console.log("Vote counts:", voteCounts);
+      // 2. Time-Based Decay
+      const daysSinceVote = Math.floor(
+        (Date.now() - new Date(vote.updatedAt).getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
 
-    // Find the most voted value(s)
-    const maxVotes = Math.max(...Object.values(voteCounts));
-    const mostVotedValues = Object.entries(voteCounts)
-      .filter(([_, count]) => count === maxVotes)
+      let timeWeight = 1;
+      if (daysSinceVote <= 7) {
+        timeWeight = 1 - daysSinceVote / 14; // 7 days = 0.5
+      } else if (daysSinceVote <= 14) {
+        timeWeight = 0.5 - (daysSinceVote - 7) / 28; // 14 days = 0.25
+      } else if (daysSinceVote <= 30) {
+        timeWeight = 0.25 - (daysSinceVote - 14) / 160; // 30 days = ~0.1
+      } else {
+        timeWeight = 0.1;
+      }
+
+      // Clamp minimum weight
+      timeWeight = Math.max(timeWeight, 0.1);
+
+      // 3. Final Score
+      const finalVoteScore = roleWeight * timeWeight * vote.value;
+
+      return {
+        ...vote,
+        weightedValue: finalVoteScore,
+      };
+    });
+
+    // Group votes by their original value and sum their weighted values
+    const voteGroups = weightedVotes.reduce(
+      (acc: { [key: number]: number }, vote) => {
+        acc[vote.value] = (acc[vote.value] || 0) + vote.weightedValue;
+        return acc;
+      },
+      {}
+    );
+
+    // Find the value with the highest weighted sum
+    const maxWeightedSum = Math.max(...Object.values(voteGroups));
+    const mostVotedValues = Object.entries(voteGroups)
+      .filter(([_, sum]) => sum === maxWeightedSum)
       .map(([value]) => Number(value));
 
-    console.log("Max votes:", maxVotes);
-    console.log("Most voted values:", mostVotedValues);
-
-    // If there's an exact tie (same number of votes), set value to -1
+    // If there's an exact tie (same weighted sum), set value to -1
     let finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
 
+    console.log("Weighted vote groups:", voteGroups);
+    console.log("Max weighted sum:", maxWeightedSum);
+    console.log("Most voted values:", mostVotedValues);
     console.log("Final value:", finalValue);
 
     // Update card value
@@ -145,7 +248,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       vote,
-      voteDistribution: voteCounts,
+      voteDistribution: voteGroups,
       mostVotedValues: mostVotedValues,
       finalValue,
       votes: votes.map((v) => ({

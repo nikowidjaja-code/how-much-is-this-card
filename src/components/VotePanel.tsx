@@ -25,19 +25,32 @@ interface Vote {
     name: string;
     email: string;
     image?: string;
+    role: string;
   };
   value: number;
   updatedAt: string;
+  weightedValue: number;
+  roleWeight: number;
+  timeWeight: number;
+  daysSinceVote: number;
+}
+
+interface VoteData {
+  voteDistribution: VoteDistribution;
+  rawVoteCounts: VoteDistribution;
+  voteDetails: Vote[];
+  finalValue: number;
+  mostVotedValues: number[];
+  maxWeightedSum: number;
+  voteCount: number;
+  weightedVoteCount: number;
 }
 
 export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const { data: session } = useSession();
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [voteDistribution, setVoteDistribution] = useState<VoteDistribution>(
-    {}
-  );
-  const [votes, setVotes] = useState<Vote[]>([]);
+  const [voteData, setVoteData] = useState<VoteData | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -52,8 +65,7 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
         }
 
         const data = await response.json();
-        setVoteDistribution(data.voteDistribution);
-        setVotes(data.votes);
+        setVoteData(data);
       } catch (err) {
         console.error("Error fetching votes:", err);
       }
@@ -86,8 +98,7 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
       }
 
       const data = await response.json();
-      setVoteDistribution(data.voteDistribution);
-      setVotes(data.votes);
+      setVoteData(data);
       toast({
         title: "Vote recorded",
         description: `Your vote of ${value} has been recorded.`,
@@ -131,20 +142,34 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
     return Math.round((count / total) * 100);
   };
 
-  const totalVotes = Object.values(voteDistribution).reduce(
-    (sum, count) => sum + count,
-    0
-  );
+  const totalVotes = voteData
+    ? Object.values(voteData.voteDistribution).reduce(
+        (sum, count) => sum + count,
+        0
+      )
+    : 0;
 
   const formatTimeAgo = (date: string) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
   const getVotePercentage = (value: number, totalVotes: number) => {
-    const count = Object.entries(voteDistribution)
+    const count = Object.entries(voteData.voteDistribution)
       .filter(([v]) => Number(v) === value)
       .reduce((sum, [_, count]) => sum + count, 0);
     return Math.round((count / totalVotes) * 100);
+  };
+
+  const getTimeWeightExplanation = (daysSinceVote: number) => {
+    if (daysSinceVote <= 7) {
+      return "First week: 1.0 → 0.5";
+    } else if (daysSinceVote <= 14) {
+      return "Second week: 0.5 → 0.25";
+    } else if (daysSinceVote <= 30) {
+      return "2-4 weeks: 0.25 → 0.1";
+    } else {
+      return "After 1 month: 0.1";
+    }
   };
 
   return (
@@ -184,18 +209,60 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           High (1.0)
         </Button>
       </div>
-      {totalVotes > 0 && (
+
+      {voteData && totalVotes > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mb-4 text-sm text-gray-600 font-['Trebuchet_MS']">
+            <p className="mb-2">Vote weights:</p>
+            <ul className="list-disc list-inside space-y-1 text-xs">
+              <li>Admin votes: 5x weight</li>
+              <li>Time decay: {getTimeWeightExplanation(0)}</li>
+            </ul>
+          </div>
+
           <div className="space-y-3">
-            {Object.entries(voteDistribution).map(([value, count]) => {
+            {Object.entries(voteData.voteDistribution).map(([value, count]) => {
               const percentage = calculatePercentage(count, totalVotes);
+              const rawCount = voteData.rawVoteCounts[Number(value)] || 0;
+              const votesForValue = voteData.voteDetails.filter(
+                (v) => v.value === Number(value)
+              );
+              const avgTimeWeight =
+                votesForValue.reduce((sum, v) => sum + v.timeWeight, 0) /
+                votesForValue.length;
+              const avgRoleWeight =
+                votesForValue.reduce((sum, v) => sum + v.roleWeight, 0) /
+                votesForValue.length;
+              const avgWeight = avgTimeWeight * avgRoleWeight;
+
               return (
                 <div key={value} className="space-y-1">
                   <div className="flex justify-between text-sm font-['Trebuchet_MS']">
                     <span className="text-gray-700">
                       {getVoteLabel(Number(value))}
                     </span>
-                    <span className="text-gray-500">{percentage}%</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">{percentage}%</span>
+                      <span className="text-xs text-gray-400">
+                        ({rawCount} votes)
+                      </span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-xs text-gray-400 cursor-help">
+                              (Avg: {avgWeight.toFixed(2)}x)
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="text-xs p-2">
+                            <p>Average weights:</p>
+                            <ul className="list-disc list-inside mt-1">
+                              <li>Time: {avgTimeWeight.toFixed(2)}x</li>
+                              <li>Role: {avgRoleWeight.toFixed(1)}x</li>
+                            </ul>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
@@ -209,13 +276,14 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
               );
             })}
           </div>
-          {votes.length > 0 && (
+
+          {voteData.voteDetails.length > 0 && (
             <div className="mt-4 space-y-2">
               <div className="text-sm font-medium text-gray-700 font-['Trebuchet_MS']">
                 Votes:
               </div>
               <div className="flex flex-wrap gap-2">
-                {votes.map((vote, index) => (
+                {voteData.voteDetails.map((vote, index) => (
                   <TooltipProvider key={index}>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -223,8 +291,6 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                           className="relative group focus:outline-none"
                           onClick={(e) => {
                             e.preventDefault();
-                            // The tooltip will show on hover by default
-                            // and stay open on click
                           }}
                         >
                           <div
@@ -286,10 +352,15 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                             <p className="text-xs text-gray-500">
                               {vote.user.email}
                             </p>
+                            {vote.user.role === "ADMIN" && (
+                              <span className="text-xs text-indigo-600">
+                                Admin
+                              </span>
+                            )}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2">
                           <span
                             className={`inline-block w-2 h-2 rounded-full ${
                               vote.value === 0.25
@@ -311,26 +382,34 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                             {getVoteLabel(vote.value)}
                           </span>
                           <span className="text-gray-500">
-                            ({getVotePercentage(vote.value, totalVotes)}% of
-                            votes)
+                            (Weight: {vote.weightedValue.toFixed(2)})
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                          <svg
-                            className="w-3.5 h-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {formatTimeAgo(vote.updatedAt)}
+                        <div className="text-xs text-gray-400 space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            {formatTimeAgo(vote.updatedAt)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {vote.roleWeight}x role,{" "}
+                            {vote.timeWeight.toFixed(2)}x time
+                            <div className="mt-1 text-gray-400">
+                              {getTimeWeightExplanation(vote.daysSinceVote)}
+                            </div>
+                          </div>
                         </div>
                       </TooltipContent>
                     </Tooltip>
