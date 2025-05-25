@@ -61,7 +61,7 @@ const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1) {
     return `Tied: ${mostVotedValues.map((v) => v.toFixed(2)).join(" / ")}`;
   }
-  if (value === -1) return "Unvalued";
+  if (value === -1) return "Unvoted";
   return value.toFixed(2);
 };
 
