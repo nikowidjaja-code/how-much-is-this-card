@@ -300,19 +300,23 @@ export default function CardList() {
           <div className="space-y-4" role="status" aria-label="Loading cards">
             {[...Array(5)].map((_, index) => (
               <div key={index} className="animate-pulse">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="h-6 w-48 bg-gray-200 rounded-md"></div>
-                  </div>
-                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="flex items-center gap-3">
-                      <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
-                      <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
-                    </div>
-                    <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                    <div className="flex gap-4">
-                      <div className="h-5 w-12 bg-gray-200 rounded-md"></div>
-                      <div className="h-5 w-16 bg-gray-200 rounded-md"></div>
+                <div className="border rounded-lg bg-white/30">
+                  <div className="px-5 py-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-6 w-48 bg-gray-200 rounded-md"></div>
+                      </div>
+                      <div className="flex items-center gap-3 justify-between sm:justify-end">
+                        <div className="flex items-center gap-3">
+                          <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+                          <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
+                        </div>
+                        <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                        <div className="flex gap-4">
+                          <div className="h-5 w-12 bg-gray-200 rounded-md"></div>
+                          <div className="h-5 w-16 bg-gray-200 rounded-md"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
