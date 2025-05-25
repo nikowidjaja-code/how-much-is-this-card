@@ -86,8 +86,8 @@ export async function GET(
       .filter(([_, sum]) => sum === maxWeightedSum)
       .map(([value]) => Number(value));
 
-    // If there's an exact tie (same weighted sum), set value to -1
-    let finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
+    // If there's a tie, set value to -1 to indicate a tie
+    const finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
 
     return NextResponse.json({
       success: true,
@@ -234,13 +234,8 @@ export async function POST(
       .filter(([_, sum]) => sum === maxWeightedSum)
       .map(([value]) => Number(value));
 
-    // If there's an exact tie (same weighted sum), set value to -1
-    let finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
-
-    console.log("Weighted vote groups:", voteGroups);
-    console.log("Max weighted sum:", maxWeightedSum);
-    console.log("Most voted values:", mostVotedValues);
-    console.log("Final value:", finalValue);
+    // If there's a tie, set value to -1 to indicate a tie
+    const finalValue = mostVotedValues.length > 1 ? -1 : mostVotedValues[0];
 
     // Update card value
     await prisma.card.update({
@@ -252,7 +247,7 @@ export async function POST(
       success: true,
       vote,
       voteDistribution: voteGroups,
-      mostVotedValues: mostVotedValues,
+      mostVotedValues: mostVotedValues.sort((a, b) => a - b), // Sort for consistent display
       finalValue,
       votes: votes.map((v) => ({
         value: v.value,

@@ -17,6 +17,7 @@ interface Card {
   name: string;
   value: number;
   updatedAt: string;
+  mostVotedValues?: number[];
 }
 
 interface DeleteState {
@@ -25,7 +26,9 @@ interface DeleteState {
   error: string | null;
 }
 
-const getCardStyle = (value: number) => {
+const getCardStyle = (value: number, mostVotedValues?: number[]) => {
+  if (value === -1 && mostVotedValues && mostVotedValues.length > 1)
+    return "bg-purple-50/30 border-purple-100 hover:bg-purple-50/50 hover:shadow-md transition-all duration-200";
   if (value === -1)
     return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-md transition-all duration-200";
   if (value <= 0.25)
@@ -39,7 +42,9 @@ const getCardStyle = (value: number) => {
   return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-md transition-all duration-200";
 };
 
-const getBadgeStyle = (value: number) => {
+const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {
+  if (value === -1 && mostVotedValues && mostVotedValues.length > 1)
+    return "bg-purple-100/80 text-purple-700 font-medium shadow-sm";
   if (value === -1) return "bg-gray-100/80 text-gray-700 font-medium shadow-sm";
   if (value <= 0.25)
     return "bg-emerald-100/80 text-emerald-700 font-medium shadow-sm";
@@ -50,6 +55,14 @@ const getBadgeStyle = (value: number) => {
   if (value === 1)
     return "bg-orange-100/80 text-orange-700 font-medium shadow-sm";
   return "bg-rose-100/80 text-rose-700 font-medium shadow-sm";
+};
+
+const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
+  if (value === -1 && mostVotedValues && mostVotedValues.length > 1) {
+    return `Tied: ${mostVotedValues.map((v) => v.toFixed(2)).join(" / ")}`;
+  }
+  if (value === -1) return "Unvalued";
+  return value.toFixed(2);
 };
 
 export default function CardList() {
@@ -350,7 +363,10 @@ export default function CardList() {
                 <AccordionItem
                   key={card.id}
                   value={card.id}
-                  className={`border rounded-lg ${getCardStyle(card.value)}`}
+                  className={`border rounded-lg ${getCardStyle(
+                    card.value,
+                    card.mostVotedValues
+                  )}`}
                 >
                   <AccordionTrigger className="px-5 py-4 hover:no-underline [&>svg]:ml-2 font-['Trebuchet_MS']">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
@@ -371,12 +387,11 @@ export default function CardList() {
                         <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS']">
                           <div
                             className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
-                              card.value
+                              card.value,
+                              card.mostVotedValues
                             )}`}
                           >
-                            {card.value === -1
-                              ? "Unvalued"
-                              : card.value.toFixed(2)}
+                            {getValueDisplay(card.value, card.mostVotedValues)}
                           </div>
                           <span className="font-normal">
                             {new Date(card.updatedAt).toLocaleDateString()}
