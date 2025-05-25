@@ -411,7 +411,7 @@ export default function CardList() {
                 <AccordionItem
                   key={card.id}
                   value={card.id}
-                  className={`border rounded-lg ${getCardStyle(
+                  className={`border rounded-lg relative ${getCardStyle(
                     card.value,
                     card.mostVotedValues
                   )}`}
@@ -447,46 +447,47 @@ export default function CardList() {
                               : "No votes yet"}
                           </span>
                         </div>
-                        <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                        {session?.user?.role === "ADMIN" && (
-                          <div className="flex gap-3">
-                            <Link
-                              href={`/edit/${card.id}`}
-                              className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                              aria-label={`Edit ${card.name}`}
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Link>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteCard(card.id);
-                              }}
-                              onKeyPress={(e) => {
-                                e.stopPropagation();
-                                handleKeyPress(e, () => deleteCard(card.id));
-                              }}
-                              className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={
-                                deleteState.isDeleting &&
-                                deleteState.id === card.id
-                              }
-                              aria-label={`Delete ${card.name}`}
-                            >
-                              {deleteState.isDeleting &&
-                              deleteState.id === card.id ? (
-                                <div className="w-4 h-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <Trash2 className="w-4 h-4" />
-                              )}
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="bg-gray-50/50 py-3">
                     <VotePanel cardId={card.id} onVoteSuccess={fetchCards} />
+                    {session?.user?.role === "ADMIN" && (
+                      <div className="flex items-center justify-end gap-4 px-5 mt-3 pt-3 border-t border-gray-200">
+                        <Link
+                          href={`/edit/${card.id}`}
+                          className="text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
+                          aria-label={`Edit ${card.name}`}
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteCard(card.id);
+                          }}
+                          onKeyPress={(e) => {
+                            e.stopPropagation();
+                            handleKeyPress(e, () => deleteCard(card.id));
+                          }}
+                          className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:no-underline"
+                          disabled={
+                            deleteState.isDeleting && deleteState.id === card.id
+                          }
+                          aria-label={`Delete ${card.name}`}
+                        >
+                          {deleteState.isDeleting &&
+                          deleteState.id === card.id ? (
+                            <span className="inline-flex items-center gap-1">
+                              <span className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                              Deleting...
+                            </span>
+                          ) : (
+                            "Delete"
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               ))}
