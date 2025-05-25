@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AddCard() {
   const [name, setName] = useState("");
@@ -10,18 +11,30 @@ export default function AddCard() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const nameParam = searchParams.get('name');
+    if (status !== "loading" && session?.user?.role !== "ADMIN") {
+      router.push("/cards");
+    }
+  }, [status, session, router]);
+
+  useEffect(() => {
+    const nameParam = searchParams.get("name");
     if (nameParam) {
       setName(nameParam);
     }
   }, [searchParams]);
 
+  // If not admin, don't render the form
+  if (status === "loading" || session?.user?.role !== "ADMIN") {
+    return null;
+  }
+
   const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = parseFloat(e.target.value);
     if (selected === 0) {
-      setCustomValue(1); 
+      setCustomValue(1);
     } else {
       setCustomValue(null);
       setValue(selected);
@@ -62,7 +75,7 @@ export default function AddCard() {
   return (
     <div className="bg-white p-6 rounded-xl shadow space-y-4">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Add New Card</h1>
-      
+
       {error && (
         <div className="bg-rose-100 text-rose-700 px-4 py-2 rounded-lg border border-rose-200">
           {error}
@@ -118,12 +131,12 @@ export default function AddCard() {
         onClick={addCard}
         disabled={isSubmitting}
         className={`w-full py-2 rounded text-lg font-semibold transition-colors ${
-          isSubmitting 
-            ? 'bg-green-600 text-white cursor-not-allowed' 
-            : 'bg-blue-600 text-white hover:bg-blue-700'
+          isSubmitting
+            ? "bg-green-600 text-white cursor-not-allowed"
+            : "bg-blue-600 text-white hover:bg-blue-700"
         }`}
       >
-        {isSubmitting ? 'Adding Card...' : 'Add Card'}
+        {isSubmitting ? "Adding Card..." : "Add Card"}
       </button>
 
       {isSubmitting && (
