@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma"; // adjust the path as needed
+import { authOptions } from "@/lib/auth";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET handler
 export async function GET(req: NextRequest) {
@@ -38,6 +39,19 @@ export async function GET(req: NextRequest) {
 // POST handler
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { name, value } = await req.json();
     if (
       !name ||
