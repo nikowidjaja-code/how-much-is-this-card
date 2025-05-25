@@ -431,17 +431,17 @@ export default function CardList() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 justify-between sm:justify-end">
-                        <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS']">
+                      <div className="flex items-center w-full sm:w-auto">
+                        <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS'] w-full justify-end sm:justify-end sm:w-auto">
                           <div
-                            className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
+                            className={`font-medium px-3 py-1 rounded-full flex items-center ${getBadgeStyle(
                               card.value,
                               card.mostVotedValues
                             )}`}
                           >
                             {getValueDisplay(card.value, card.mostVotedValues)}
                           </div>
-                          <span className="font-normal">
+                          <span className="font-normal flex items-center justify-end min-w-[140px] ml-auto sm:ml-0">
                             {card.lastVoteTime
                               ? `Last vote: ${getRelativeTime(
                                   card.lastVoteTime
