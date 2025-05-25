@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { VotePanel } from "@/components/VotePanel";
 import { log } from "console";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface Card {
   id: string;
@@ -60,14 +61,14 @@ const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {
 
 const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1) {
-    return `Tied: ${mostVotedValues
+    return mostVotedValues
       .map((v) => {
         if (v === 0.25) return "Low";
         if (v === 0.5) return "Mid";
         if (v === 1) return "High";
         return v.toFixed(2);
       })
-      .join(" / ")}`;
+      .join(" / ");
   }
   if (value === -1) return "Unvoted";
   if (value === 0.25) return "Low";
@@ -448,13 +449,13 @@ export default function CardList() {
                         </div>
                         <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
                         {session?.user?.role === "ADMIN" && (
-                          <div className="flex gap-4">
+                          <div className="flex gap-3">
                             <Link
                               href={`/edit/${card.id}`}
-                              className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline"
+                              className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
                               aria-label={`Edit ${card.name}`}
                             >
-                              Edit
+                              <Pencil className="w-4 h-4" />
                             </Link>
                             <button
                               onClick={(e) => {
@@ -465,7 +466,7 @@ export default function CardList() {
                                 e.stopPropagation();
                                 handleKeyPress(e, () => deleteCard(card.id));
                               }}
-                              className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled={
                                 deleteState.isDeleting &&
                                 deleteState.id === card.id
@@ -473,9 +474,11 @@ export default function CardList() {
                               aria-label={`Delete ${card.name}`}
                             >
                               {deleteState.isDeleting &&
-                              deleteState.id === card.id
-                                ? "Deleting..."
-                                : "Delete"}
+                              deleteState.id === card.id ? (
+                                <div className="w-4 h-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
                             </button>
                           </div>
                         )}
