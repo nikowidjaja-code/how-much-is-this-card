@@ -59,9 +59,19 @@ const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {
 
 const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1) {
-    return `Tied: ${mostVotedValues.map((v) => v.toFixed(2)).join(" / ")}`;
+    return `Tied: ${mostVotedValues
+      .map((v) => {
+        if (v === 0.25) return "Low";
+        if (v === 0.5) return "Mid";
+        if (v === 1) return "High";
+        return v.toFixed(2);
+      })
+      .join(" / ")}`;
   }
   if (value === -1) return "Unvoted";
+  if (value === 0.25) return "Low";
+  if (value === 0.5) return "Mid";
+  if (value === 1) return "High";
   return value.toFixed(2);
 };
 
@@ -277,11 +287,9 @@ export default function CardList() {
             aria-label="Filter by value"
           >
             <option value="all">All Values</option>
-            <option value={0.25}>Low (0.25)</option>
-            <option value={0.5}>Mid (0.5)</option>
-            <option value={0.75}>So So (0.75)</option>
-            <option value={1}>High (1)</option>
-            <option value={0}>Other</option>
+            <option value={0.25}>Low</option>
+            <option value={0.5}>Mid</option>
+            <option value={1}>High</option>
           </select>
 
           <select
