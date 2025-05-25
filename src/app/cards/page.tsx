@@ -18,6 +18,7 @@ interface Card {
   value: number;
   updatedAt: string;
   mostVotedValues?: number[];
+  lastVoteTime?: string | null;
 }
 
 interface DeleteState {
@@ -73,6 +74,44 @@ const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
   if (value === 0.5) return "Mid";
   if (value === 1) return "High";
   return value.toFixed(2);
+};
+
+const getRelativeTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) {
+    return "just now";
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minute${diffInMinutes === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} hour${diffInHours === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) {
+    return `${diffInDays} day${diffInDays === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) {
+    return `${diffInWeeks} week${diffInWeeks === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths} month${diffInMonths === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears} year${diffInYears === 1 ? "" : "s"} ago`;
 };
 
 export default function CardList() {
@@ -300,7 +339,7 @@ export default function CardList() {
             className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             aria-label="Sort by"
           >
-            <option value="updatedAt">Recently Modified</option>
+            <option value="updatedAt">Recently Voted</option>
             <option value="name">Alphabetical</option>
             <option value="value">Value</option>
           </select>
@@ -402,7 +441,9 @@ export default function CardList() {
                             {getValueDisplay(card.value, card.mostVotedValues)}
                           </div>
                           <span className="font-normal">
-                            {new Date(card.updatedAt).toLocaleDateString()}
+                            {card.lastVoteTime
+                              ? getRelativeTime(card.lastVoteTime)
+                              : "No votes yet"}
                           </span>
                         </div>
                         <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>

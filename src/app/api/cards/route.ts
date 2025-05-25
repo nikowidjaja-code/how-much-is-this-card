@@ -68,8 +68,19 @@ export async function GET(req: NextRequest) {
         return {
           value: vote.value,
           weightedValue: roleWeight * timeWeight,
+          updatedAt: vote.updatedAt,
         };
       });
+
+      // Get the most recent vote time
+      const lastVoteTime =
+        weightedVotes.length > 0
+          ? new Date(
+              Math.max(
+                ...weightedVotes.map((v) => new Date(v.updatedAt).getTime())
+              )
+            ).toISOString()
+          : null;
 
       // Group votes by their original value and sum their weighted values
       const voteGroups = weightedVotes.reduce(
@@ -90,6 +101,7 @@ export async function GET(req: NextRequest) {
       return {
         ...card,
         mostVotedValues,
+        lastVoteTime,
         votes: undefined, // Remove the votes array from the response
       };
     });
