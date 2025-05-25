@@ -300,21 +300,19 @@ export default function CardList() {
           <div className="space-y-4" role="status" aria-label="Loading cards">
             {[...Array(5)].map((_, index) => (
               <div key={index} className="animate-pulse">
-                <div className="py-4 px-5 rounded-lg border bg-white/50">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <div className="h-6 w-48 bg-gray-200 rounded-md"></div>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="h-6 w-48 bg-gray-200 rounded-md"></div>
+                  </div>
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="flex items-center gap-3">
+                      <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+                      <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
                     </div>
-                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                      <div className="flex items-center gap-3">
-                        <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
-                        <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
-                      </div>
-                      <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                      <div className="flex gap-4">
-                        <div className="h-5 w-12 bg-gray-200 rounded-md"></div>
-                        <div className="h-5 w-16 bg-gray-200 rounded-md"></div>
-                      </div>
+                    <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                    <div className="flex gap-4">
+                      <div className="h-5 w-12 bg-gray-200 rounded-md"></div>
+                      <div className="h-5 w-16 bg-gray-200 rounded-md"></div>
                     </div>
                   </div>
                 </div>
@@ -341,85 +339,88 @@ export default function CardList() {
             )}
           </div>
         ) : (
-          <Accordion type="single" collapsible className="space-y-4">
-            {filteredCards.map((card) => (
-              <AccordionItem
-                key={card.id}
-                value={card.id}
-                className={`border rounded-lg ${getCardStyle(card.value)}`}
-              >
-                <AccordionTrigger className="px-5 py-4 hover:no-underline [&>svg]:ml-2 font-['Trebuchet_MS']">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="text-base font-medium text-gray-700 capitalize font-['Trebuchet_MS'] truncate max-w-[200px] sm:max-w-none">
-                        {card.name
-                          .toLowerCase()
-                          .split(" ")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )
-                          .join(" ")}
+          <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 relative">
+            <div className="absolute inset-y-0 right-0 w-2 bg-gradient-to-b from-transparent via-gray-100 to-transparent pointer-events-none"></div>
+            <Accordion type="single" collapsible className="space-y-4 pb-4">
+              {filteredCards.map((card) => (
+                <AccordionItem
+                  key={card.id}
+                  value={card.id}
+                  className={`border rounded-lg ${getCardStyle(card.value)}`}
+                >
+                  <AccordionTrigger className="px-5 py-4 hover:no-underline [&>svg]:ml-2 font-['Trebuchet_MS']">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="text-base font-medium text-gray-700 capitalize font-['Trebuchet_MS'] truncate max-w-[200px] sm:max-w-none">
+                          {card.name
+                            .toLowerCase()
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-3 justify-between sm:justify-end">
-                      <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS']">
-                        <div
-                          className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
-                            card.value
-                          )}`}
-                        >
-                          {card.value === -1
-                            ? "Unvalued"
-                            : card.value.toFixed(2)}
-                        </div>
-                        <span className="font-normal">
-                          {new Date(card.updatedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                      {session?.user?.role === "ADMIN" && (
-                        <div className="flex gap-4">
-                          <Link
-                            href={`/edit/${card.id}`}
-                            className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline"
-                            aria-label={`Edit ${card.name}`}
+                      <div className="flex items-center gap-3 justify-between sm:justify-end">
+                        <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS']">
+                          <div
+                            className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
+                              card.value
+                            )}`}
                           >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteCard(card.id);
-                            }}
-                            onKeyPress={(e) => {
-                              e.stopPropagation();
-                              handleKeyPress(e, () => deleteCard(card.id));
-                            }}
-                            className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={
-                              deleteState.isDeleting &&
+                            {card.value === -1
+                              ? "Unvalued"
+                              : card.value.toFixed(2)}
+                          </div>
+                          <span className="font-normal">
+                            {new Date(card.updatedAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                        {session?.user?.role === "ADMIN" && (
+                          <div className="flex gap-4">
+                            <Link
+                              href={`/edit/${card.id}`}
+                              className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline"
+                              aria-label={`Edit ${card.name}`}
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteCard(card.id);
+                              }}
+                              onKeyPress={(e) => {
+                                e.stopPropagation();
+                                handleKeyPress(e, () => deleteCard(card.id));
+                              }}
+                              className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={
+                                deleteState.isDeleting &&
+                                deleteState.id === card.id
+                              }
+                              aria-label={`Delete ${card.name}`}
+                            >
+                              {deleteState.isDeleting &&
                               deleteState.id === card.id
-                            }
-                            aria-label={`Delete ${card.name}`}
-                          >
-                            {deleteState.isDeleting &&
-                            deleteState.id === card.id
-                              ? "Deleting..."
-                              : "Delete"}
-                          </button>
-                        </div>
-                      )}
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="bg-gray-50/50 py-3">
-                  <VotePanel cardId={card.id} onVoteSuccess={fetchCards} />
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-gray-50/50 py-3">
+                    <VotePanel cardId={card.id} onVoteSuccess={fetchCards} />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         )}
       </div>
 
