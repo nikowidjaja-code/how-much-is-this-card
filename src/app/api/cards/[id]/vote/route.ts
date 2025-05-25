@@ -51,7 +51,7 @@ export async function GET(
       timeWeight = Math.max(timeWeight, 0.1);
 
       // 3. Final Score
-      const finalVoteScore = roleWeight * timeWeight * vote.value;
+      const finalVoteScore = roleWeight * timeWeight;
 
       return {
         ...vote,
@@ -208,11 +208,14 @@ export async function POST(
       timeWeight = Math.max(timeWeight, 0.1);
 
       // 3. Final Score
-      const finalVoteScore = roleWeight * timeWeight * vote.value;
+      const finalVoteScore = roleWeight * timeWeight;
 
       return {
         ...vote,
         weightedValue: finalVoteScore,
+        roleWeight,
+        timeWeight,
+        daysSinceVote,
       };
     });
 
