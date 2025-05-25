@@ -152,14 +152,23 @@ export default function CardList() {
     setDeleteState({ id, isDeleting: true, error: null });
 
     try {
-      await fetch(`/api/cards/${id}`, {
+      const response = await fetch(`/api/cards/${id}`, {
         method: "DELETE",
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete card");
+      }
+
       setCards((prevCards) => prevCards.filter((card) => card.id !== id));
     } catch (error) {
       setDeleteState((prev) => ({
         ...prev,
-        error: "Failed to delete card. Please try again later.",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete card. Please try again later.",
       }));
     } finally {
       setDeleteState({ id: null, isDeleting: false, error: null });
