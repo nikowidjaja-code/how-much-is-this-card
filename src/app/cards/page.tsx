@@ -443,7 +443,9 @@ export default function CardList() {
                           </div>
                           <span className="font-normal">
                             {card.lastVoteTime
-                              ? getRelativeTime(card.lastVoteTime)
+                              ? `Last vote: ${getRelativeTime(
+                                  card.lastVoteTime
+                                )}`
                               : "No votes yet"}
                           </span>
                         </div>
