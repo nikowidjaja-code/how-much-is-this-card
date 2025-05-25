@@ -368,34 +368,38 @@ export default function CardList() {
                         </span>
                       </div>
                       <div className="h-4 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                      <div className="flex gap-3">
-                        <Link
-                          href={`/edit/${card.id}`}
-                          className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline"
-                          aria-label={`Edit ${card.name}`}
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteCard(card.id);
-                          }}
-                          onKeyPress={(e) => {
-                            e.stopPropagation();
-                            handleKeyPress(e, () => deleteCard(card.id));
-                          }}
-                          className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={
-                            deleteState.isDeleting && deleteState.id === card.id
-                          }
-                          aria-label={`Delete ${card.name}`}
-                        >
-                          {deleteState.isDeleting && deleteState.id === card.id
-                            ? "Deleting..."
-                            : "Delete"}
-                        </button>
-                      </div>
+                      {session?.user?.role === "ADMIN" && (
+                        <div className="flex gap-4">
+                          <Link
+                            href={`/edit/${card.id}`}
+                            className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline"
+                            aria-label={`Edit ${card.name}`}
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteCard(card.id);
+                            }}
+                            onKeyPress={(e) => {
+                              e.stopPropagation();
+                              handleKeyPress(e, () => deleteCard(card.id));
+                            }}
+                            className="text-sm text-rose-600 hover:text-rose-800 font-medium transition-colors font-['Trebuchet_MS'] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={
+                              deleteState.isDeleting &&
+                              deleteState.id === card.id
+                            }
+                            aria-label={`Delete ${card.name}`}
+                          >
+                            {deleteState.isDeleting &&
+                            deleteState.id === card.id
+                              ? "Deleting..."
+                              : "Delete"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </AccordionTrigger>
