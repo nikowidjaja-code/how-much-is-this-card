@@ -2,17 +2,34 @@
 
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function Navigation() {
   const { data: session, status } = useSession();
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const isLoading = status === "loading";
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSignIn = () => {
     router.push("/login");
@@ -23,12 +40,21 @@ export default function Navigation() {
     signOut();
   };
 
+  const handleProfileClick = () => {
+    router.push("/profile");
+    setShowDropdown(false);
+  };
+
   const handleBack = () => {
     if (window.history.length > 2) {
       router.back();
     } else {
       router.push("/cards");
     }
+  };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
   };
 
   return (
@@ -96,13 +122,12 @@ export default function Navigation() {
           </button>
         ) : session ? (
           <div className="flex items-center gap-2">
-            <div
-              className="relative"
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-            >
+            <div ref={dropdownRef} className="relative">
               {session.user?.image ? (
-                <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden ring-1 ring-gray-200">
+                <div
+                  onClick={toggleDropdown}
+                  className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden ring-1 ring-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                >
                   <Image
                     src={session.user.image}
                     alt={session.user.name || "Profile picture"}
@@ -111,38 +136,68 @@ export default function Navigation() {
                   />
                 </div>
               ) : (
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center ring-1 ring-gray-200">
+                <div
+                  onClick={toggleDropdown}
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center ring-1 ring-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                >
                   <span className="text-gray-500 text-xs sm:text-sm">
                     {session.user?.name?.[0]?.toUpperCase() || "?"}
                   </span>
                 </div>
               )}
-              {showTooltip && session.user?.name && (
-                <div className="absolute right-0 top-full mt-1 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg whitespace-nowrap">
-                  {session.user.name}
+              {showDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
+                      {session.user?.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {session.user?.email}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleProfileClick}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    Sign Out
+                  </button>
                 </div>
               )}
             </div>
-            <button
-              onClick={handleSignOut}
-              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              Sign Out
-            </button>
           </div>
         ) : null}
       </div>
