@@ -64,10 +64,19 @@ export default function VotingHistory() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-2">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-16 bg-gray-100 rounded-lg"></div>
+          <div
+            key={i}
+            className="animate-pulse py-2 border-b border-gray-100 last:border-0"
+          >
+            <div className="flex items-center justify-between">
+              <div className="space-y-1.5">
+                <div className="h-4 bg-gray-100 rounded w-48"></div>
+                <div className="h-3 bg-gray-100 rounded w-32"></div>
+              </div>
+              <div className="h-5 bg-gray-100 rounded-full w-16"></div>
+            </div>
           </div>
         ))}
       </div>
@@ -92,7 +101,7 @@ export default function VotingHistory() {
   }
 
   return (
-    <div className="max-h-[400px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
+    <div className="max-h-[400px] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
       {votes.map((vote) => (
         <div
           key={vote.id}
