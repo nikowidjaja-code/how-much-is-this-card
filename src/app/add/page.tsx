@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Plus, Check } from "lucide-react";
 
 export default function AddCard() {
   const [name, setName] = useState("");
@@ -27,14 +28,22 @@ export default function AddCard() {
   // If not admin, don't render the form
   if (status === "loading" || session?.user?.role !== "ADMIN") {
     return (
-      <div className="bg-white p-6 rounded-xl shadow space-y-4">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6">
+              <div className="animate-pulse space-y-6">
+                <div className="flex justify-center">
+                  <div className="h-8 bg-gray-200 rounded w-48"></div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-24 mx-auto"></div>
+                  <div className="h-12 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-12 bg-gray-200 rounded"></div>
+              </div>
+            </div>
           </div>
-          <div className="h-10 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
@@ -71,43 +80,71 @@ export default function AddCard() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Add New Card</h1>
+    <div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="p-6">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+              Add New Card
+            </h1>
 
-      {error && (
-        <div className="bg-rose-100 text-rose-700 px-4 py-2 rounded-lg border border-rose-200">
-          {error}
+            {error && (
+              <div className="mb-6 bg-rose-50 text-rose-700 px-4 py-3 rounded-lg border border-rose-200 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="space-y-6">
+              <div>
+                <label
+                  htmlFor="card-name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Card Name
+                </label>
+                <input
+                  id="card-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full h-12 px-4 border border-gray-200 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter card name"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <button
+                onClick={addCard}
+                disabled={isSubmitting}
+                className={`w-full h-12 rounded-lg text-base font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                  isSubmitting
+                    ? "bg-green-600 text-white cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+                }`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    <span>Adding Card...</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5" />
+                    <span>Add Card</span>
+                  </>
+                )}
+              </button>
+
+              {isSubmitting && (
+                <div className="text-center text-green-600 font-medium flex items-center justify-center gap-2">
+                  <Check className="w-5 h-5" />
+                  <span>Card added successfully! Redirecting...</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      )}
-
-      <div>
-        <label className="block text-sm font-semibold mb-1">Card Name</label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded px-3 py-2 text-base"
-          placeholder="Card name"
-          disabled={isSubmitting}
-        />
       </div>
-
-      <button
-        onClick={addCard}
-        disabled={isSubmitting}
-        className={`w-full py-2 rounded text-lg font-semibold transition-colors ${
-          isSubmitting
-            ? "bg-green-600 text-white cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700"
-        }`}
-      >
-        {isSubmitting ? "Adding Card..." : "Add Card"}
-      </button>
-
-      {isSubmitting && (
-        <div className="text-center text-green-600 font-medium">
-          Card added successfully! Redirecting...
-        </div>
-      )}
     </div>
   );
 }
