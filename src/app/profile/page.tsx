@@ -199,7 +199,7 @@ export default function ProfilePage() {
               </div>
 
               {activeTab === "profile" ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Profile Image and Username */}
                   <div className="flex items-center gap-6">
                     <div className="relative group">
@@ -274,17 +274,21 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
+                  <div className="border-t border-gray-100" />
+
                   {/* Email Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
                       Email
                     </label>
                     <p className="text-sm text-gray-900">{profile.email}</p>
                   </div>
 
+                  <div className="border-t border-gray-100" />
+
                   {/* Role Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
                       Role
                     </label>
                     <div className="flex items-center gap-2">
@@ -307,9 +311,11 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
+                  <div className="border-t border-gray-100" />
+
                   {/* Member Since Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
                       Joined
                     </label>
                     <div className="flex items-center gap-2">
@@ -322,9 +328,11 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
+                  <div className="border-t border-gray-100" />
+
                   {/* Last Vote Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
                       Last Vote
                     </label>
                     <div className="flex items-center gap-2">

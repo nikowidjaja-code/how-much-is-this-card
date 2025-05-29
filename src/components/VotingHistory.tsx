@@ -101,33 +101,40 @@ export default function VotingHistory() {
   }
 
   return (
-    <div className="max-h-[400px] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
-      {votes.map((vote) => (
-        <div
-          key={vote.id}
-          className="py-2 border-b border-gray-100 last:border-0"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-gray-900">{vote.cardName}</h3>
-              <p className="text-xs text-gray-400">
-                {format(new Date(vote.createdAt), "MMM d, yyyy 'at' h:mm a")}
-              </p>
+    <div>
+      <div className="mb-4">
+        <h3 className="text-base font-bold text-gray-700 border-b border-gray-200 pb-2 text-center">
+          Voting Activity
+        </h3>
+      </div>
+      <div className="max-h-[400px] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
+        {votes.map((vote) => (
+          <div
+            key={vote.id}
+            className="py-2 border-b border-gray-100 last:border-0"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-gray-900">{vote.cardName}</h3>
+                <p className="text-xs text-gray-400">
+                  {format(new Date(vote.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                </p>
+              </div>
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  vote.value === 0.25
+                    ? "bg-emerald-50 text-emerald-700"
+                    : vote.value === 0.5
+                    ? "bg-amber-50 text-amber-700"
+                    : "bg-blue-50 text-blue-700"
+                }`}
+              >
+                {getVoteLabel(vote.value)}
+              </span>
             </div>
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                vote.value === 0.25
-                  ? "bg-emerald-50 text-emerald-700"
-                  : vote.value === 0.5
-                  ? "bg-amber-50 text-amber-700"
-                  : "bg-blue-50 text-blue-700"
-              }`}
-            >
-              {getVoteLabel(vote.value)}
-            </span>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
