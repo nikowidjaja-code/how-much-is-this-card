@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user data with their last vote
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: session.user.email,
       },
@@ -34,21 +34,22 @@ export async function GET() {
     });
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Format the response
-    const profile = {
+    return NextResponse.json({
       name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt.toISOString(),
-      lastVoteAt: user.votes[0]?.createdAt.toISOString() || null,
-    };
-
-    return NextResponse.json(profile);
+      createdAt: user.createdAt,
+      lastVoteAt: user.votes[0]?.createdAt || null,
+    });
   } catch (error) {
-    console.error("[PROFILE_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.error("GET /api/user/profile error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

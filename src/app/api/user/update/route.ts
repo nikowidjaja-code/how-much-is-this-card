@@ -1,25 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { name } = body;
-
+    const { name } = await req.json();
     if (!name || typeof name !== "string") {
-      return new NextResponse("Invalid name", { status: 400 });
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Update the user in the database
-    const updatedUser = await db.user.update({
+    const user = await prisma.user.update({
       where: {
         email: session.user.email,
       },
@@ -28,9 +24,12 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json({ success: true, user });
   } catch (error) {
-    console.error("[USER_UPDATE]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.error("POST /api/user/update error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

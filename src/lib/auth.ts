@@ -1,7 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 const ADMIN_EMAILS = ["alpharex123@gmail.com"];
 
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       if (!user.email) return false;
 
-      const dbUser = await db.user.upsert({
+      const dbUser = await prisma.user.upsert({
         where: { email: user.email },
         update: {
           name: user.name,
@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (token.email) {
-        const dbUser = await db.user.findUnique({
+        const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
         });
 
