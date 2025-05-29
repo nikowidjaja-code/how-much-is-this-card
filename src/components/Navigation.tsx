@@ -154,6 +154,17 @@ export default function Navigation() {
                     <p className="text-xs text-gray-500 truncate">
                       {session.user?.email}
                     </p>
+                    <p className="text-xs mt-1">
+                      <span
+                        className={`${
+                          session.user?.role === "ADMIN"
+                            ? "text-indigo-600"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {session.user?.role === "ADMIN" ? "Admin" : "User"}
+                      </span>
+                    </p>
                   </div>
                   <button
                     onClick={handleProfileClick}
