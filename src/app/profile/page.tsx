@@ -17,7 +17,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,10 +26,10 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (status === "authenticated" && session?.user?.email) {
       fetchProfile();
     }
-  }, [session?.user?.email]);
+  }, [status, session?.user?.email]);
 
   const fetchProfile = async () => {
     try {
@@ -92,7 +92,15 @@ export default function ProfilePage() {
     }
   };
 
-  if (!session) {
+  if (status === "loading") {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated") {
     router.push("/login");
     return null;
   }
