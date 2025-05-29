@@ -26,7 +26,18 @@ export default function AddCard() {
 
   // If not admin, don't render the form
   if (status === "loading" || session?.user?.role !== "ADMIN") {
-    return null;
+    return (
+      <div className="bg-white p-6 rounded-xl shadow space-y-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+          </div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
   }
 
   const addCard = async () => {

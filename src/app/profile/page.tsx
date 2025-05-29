@@ -92,10 +92,59 @@ export default function ProfilePage() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || !profile) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-[calc(100vh-4rem)] overflow-y-auto bg-gray-50">
+        <div className="py-6">
+          <div className="max-w-2xl mx-auto px-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="p-6">
+                <div className="animate-pulse space-y-6">
+                  {/* Profile Image and Username Skeleton */}
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 rounded-full bg-gray-200" />
+                    <div className="flex-1">
+                      <div className="h-7 w-48 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+
+                  {/* Email Field Skeleton */}
+                  <div>
+                    <div className="h-4 w-24 bg-gray-200 rounded mb-2" />
+                    <div className="h-5 w-64 bg-gray-200 rounded" />
+                  </div>
+
+                  {/* Role Field Skeleton */}
+                  <div>
+                    <div className="h-4 w-16 bg-gray-200 rounded mb-2" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gray-200 rounded" />
+                      <div className="h-5 w-24 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+
+                  {/* Member Since Field Skeleton */}
+                  <div>
+                    <div className="h-4 w-28 bg-gray-200 rounded mb-2" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gray-200 rounded" />
+                      <div className="h-5 w-40 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+
+                  {/* Last Vote Field Skeleton */}
+                  <div>
+                    <div className="h-4 w-20 bg-gray-200 rounded mb-2" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gray-200 rounded" />
+                      <div className="h-5 w-36 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -103,14 +152,6 @@ export default function ProfilePage() {
   if (status === "unauthenticated") {
     router.push("/login");
     return null;
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
   }
 
   return (
