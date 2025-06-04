@@ -158,6 +158,7 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   };
 
   const getVotePercentage = (value: number, totalVotes: number) => {
+    if (!voteData) return 0;
     const count = Object.entries(voteData.voteDistribution)
       .filter(([v]) => Number(v) === value)
       .reduce((sum, [_, count]) => sum + count, 0);
