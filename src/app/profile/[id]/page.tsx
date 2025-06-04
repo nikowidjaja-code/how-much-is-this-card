@@ -10,7 +10,7 @@ import {
   Check,
   X,
   Shield,
-  Clock,
+  Calendar,
   ThumbsUp,
   Copy,
   CheckCheck,
@@ -131,10 +131,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Profile Content Skeleton */}
                 <div className="space-y-6">
                   {/* Profile Image and Username */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col items-center gap-4">
                     <div className="w-24 h-24 rounded-full bg-gray-200 animate-pulse"></div>
-                    <div className="flex-1">
+                    <div className="flex flex-col items-center gap-2">
                       <div className="h-7 w-48 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
                     </div>
                   </div>
 
@@ -210,9 +211,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
 
               {activeTab === "profile" ? (
-                <div className="space-y-4">
+                <div className="space-y-0">
                   {/* Profile Image and Username */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col items-center gap-4 pb-4">
                     <div className="relative">
                       <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-100 shadow-sm">
                         {profile.image ? (
@@ -232,14 +233,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       </div>
                     </div>
 
-                    <div className="flex-1">
+                    <div className="flex flex-col items-center gap-1">
                       {isEditing ? (
                         <div className="flex items-center gap-2">
                           <input
                             type="text"
                             value={editedName}
                             onChange={(e) => setEditedName(e.target.value)}
-                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your name"
                           />
                           <button
@@ -259,7 +260,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           </button>
                         </div>
                       ) : (
-                        <div className="space-y-1">
+                        <>
                           <div className="flex items-center gap-2">
                             <h1 className="text-xl font-semibold text-gray-900">
                               {profile.name}
@@ -289,7 +290,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                               )}
                             </button>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   </div>
@@ -297,8 +298,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="border-t border-gray-100" />
 
                   {/* Role Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
+                  <div className="py-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Role
                     </label>
                     <div className="flex items-center gap-2">
@@ -324,12 +325,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="border-t border-gray-100" />
 
                   {/* Member Since Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
+                  <div className="py-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Joined
                     </label>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-500" />
+                      <Calendar className="w-4 h-4 text-gray-500" />
                       <p className="text-sm text-gray-900">
                         {formatDistanceToNow(new Date(profile.createdAt), {
                           addSuffix: true,
@@ -341,8 +342,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="border-t border-gray-100" />
 
                   {/* Last Vote Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
+                  <div className="py-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Last Vote
                     </label>
                     <div className="flex items-center gap-2">
