@@ -41,7 +41,9 @@ export default function Navigation() {
   };
 
   const handleProfileClick = () => {
-    router.push("/profile");
+    if (session?.user?.id) {
+      router.push(`/profile/${session.user.id}`);
+    }
     setShowDropdown(false);
   };
 
