@@ -2,6 +2,7 @@ import "styles/globals.css";
 import Navigation from "@/components/Navigation";
 import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
+import LandscapeWarning from "@/components/LandscapeWarning";
 
 export const metadata = {
   title: "CUE Card Vault",
@@ -28,6 +29,7 @@ export default function RootLayout({
       </head>
       <body className="h-full bg-gray-100 text-gray-900 font-sans">
         <Providers>
+          <LandscapeWarning />
           <div className="h-full flex flex-col">
             <header className="bg-white shadow sticky top-0 z-10">
               <Navigation />
