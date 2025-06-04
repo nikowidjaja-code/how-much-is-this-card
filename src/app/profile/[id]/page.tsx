@@ -292,7 +292,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
               {/* Tab Content */}
               {activeTab === "profile" ? (
-                <div className="w-full"></div>
+                <div className="w-full">
                   <div className="py-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Role
