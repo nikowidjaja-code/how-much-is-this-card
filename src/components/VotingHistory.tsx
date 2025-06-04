@@ -113,7 +113,7 @@ export default function VotingHistory({ hideTitle }: VotingHistoryProps) {
           </h3>
         </div>
       )}
-      <div className="max-h-[400px] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
+      <div className="max-h-[25vh] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
         {votes.map((vote) => (
           <div
             key={vote.id}
