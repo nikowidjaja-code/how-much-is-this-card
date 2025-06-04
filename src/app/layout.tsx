@@ -1,5 +1,8 @@
-import 'styles/globals.css';
-import Link from 'next/link';
+import "styles/globals.css";
+import Navigation from "@/components/Navigation";
+import Providers from "@/components/Providers";
+import { Toaster } from "@/components/ui/toaster";
+import LandscapeWarning from "@/components/LandscapeWarning";
 
 export const metadata = {
   title: "CUE Card Vault",
@@ -25,21 +28,18 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="h-full bg-gray-100 text-gray-900 font-sans">
-        <div className="h-full flex flex-col">
-          <header className="bg-white shadow sticky top-0 z-10">
-            <nav className="max-w-3xl mx-auto flex justify-between p-4 text-lg font-semibold">
-              <Link href="/cards" className="hover:text-blue-600">
-                🃏 Cards
-              </Link>
-              <Link href="/add" className="hover:text-green-600">
-                ➕ Add
-              </Link>
-            </nav>
-          </header>
-          <main className="flex-1 overflow-hidden max-w-3xl mx-auto w-full px-4 sm:px-6">
-            {children}
-          </main>
-        </div>
+        <Providers>
+          <LandscapeWarning />
+          <div className="h-full flex flex-col">
+            <header className="bg-white shadow sticky top-0 z-10">
+              <Navigation />
+            </header>
+            <main className="flex-1 overflow-hidden max-w-3xl mx-auto w-full px-4 sm:px-6">
+              {children}
+            </main>
+          </div>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

@@ -1,32 +1,49 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AddCard() {
   const [name, setName] = useState("");
-  const [value, setValue] = useState(0.5);
-  const [customValue, setCustomValue] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const nameParam = searchParams.get('name');
+    if (status !== "loading" && session?.user?.role !== "ADMIN") {
+      router.push("/cards");
+    }
+  }, [status, session, router]);
+
+  useEffect(() => {
+    const nameParam = searchParams.get("name");
     if (nameParam) {
       setName(nameParam);
     }
   }, [searchParams]);
 
-  const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = parseFloat(e.target.value);
-    if (selected === 0) {
-      setCustomValue(1); 
-    } else {
-      setCustomValue(null);
-      setValue(selected);
-    }
-  };
+  // If not admin, don't render the form
+  if (status === "loading" || session?.user?.role !== "ADMIN") {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="bg-white p-6 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] space-y-6">
+          <div className="border-b pb-4">
+            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mt-2"></div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+
+          <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
 
   const addCard = async () => {
     if (!name.trim()) {
@@ -38,11 +55,10 @@ export default function AddCard() {
     setError(null);
 
     try {
-      const finalValue = customValue !== null ? customValue : value;
       const response = await fetch("/api/cards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, value: finalValue }),
+        body: JSON.stringify({ name }),
       });
 
       if (!response.ok) {
@@ -60,77 +76,90 @@ export default function AddCard() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Add New Card</h1>
-      
-      {error && (
-        <div className="bg-rose-100 text-rose-700 px-4 py-2 rounded-lg border border-rose-200">
-          {error}
+    <div className="max-w-2xl mx-auto p-6">
+      <main className="bg-white p-6 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] space-y-6">
+        <div className="border-b pb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Add New Card</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Create a new card by entering its name below
+          </p>
         </div>
-      )}
 
-      <div>
-        <label className="block text-sm font-semibold mb-1">Card Name</label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded px-3 py-2 text-base"
-          placeholder="Card name"
-          disabled={isSubmitting}
-        />
-      </div>
+        {error && (
+          <div className="bg-rose-50 text-rose-700 px-4 py-3 rounded-lg border border-rose-200 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {error}
+          </div>
+        )}
 
-      <div>
-        <label className="block text-sm font-semibold mb-1">Value</label>
-        <select
-          value={customValue !== null ? 0 : value}
-          onChange={handleValueChange}
-          className="w-full border rounded px-3 py-2 text-base"
-          disabled={isSubmitting}
-        >
-          <option value={0.25}>Low (0.25)</option>
-          <option value={0.5}>Mid (0.5)</option>
-          <option value={0.75}>So So (0.75)</option>
-          <option value={1}>High (1)</option>
-          <option value={0}>Other</option>
-        </select>
-      </div>
-
-      {customValue !== null && (
-        <div>
-          <label className="block text-sm font-semibold mb-1">
-            Custom Value
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Card Name
           </label>
           <input
-            type="number"
-            value={customValue}
-            onChange={(e) => setCustomValue(parseFloat(e.target.value))}
-            className="w-full border rounded px-3 py-2 text-base"
-            placeholder="Enter custom value"
-            step="0.01"
-            min="0"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            placeholder="Enter card name"
             disabled={isSubmitting}
           />
         </div>
-      )}
 
-      <button
-        onClick={addCard}
-        disabled={isSubmitting}
-        className={`w-full py-2 rounded text-lg font-semibold transition-colors ${
-          isSubmitting 
-            ? 'bg-green-600 text-white cursor-not-allowed' 
-            : 'bg-blue-600 text-white hover:bg-blue-700'
-        }`}
-      >
-        {isSubmitting ? 'Adding Card...' : 'Add Card'}
-      </button>
+        <button
+          onClick={addCard}
+          disabled={isSubmitting}
+          className={`w-full py-2.5 rounded-lg text-base font-medium transition-all ${
+            isSubmitting
+              ? "bg-green-600 text-white cursor-not-allowed opacity-90"
+              : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+          }`}
+        >
+          {isSubmitting ? (
+            <div className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Adding Card...
+            </div>
+          ) : (
+            "Add Card"
+          )}
+        </button>
 
-      {isSubmitting && (
-        <div className="text-center text-green-600 font-medium">
-          Card added successfully! Redirecting...
-        </div>
-      )}
+        {isSubmitting && (
+          <div className="text-center py-3 bg-green-50 text-green-700 rounded-lg border border-green-200">
+            Card added successfully! Redirecting...
+          </div>
+        )}
+      </main>
     </div>
   );
 }
