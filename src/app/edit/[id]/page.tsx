@@ -66,56 +66,106 @@ export default function EditCard() {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow space-y-4">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="bg-white p-6 rounded-xl shadow space-y-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
             <div className="h-10 bg-gray-200 rounded"></div>
           </div>
-          <div className="h-10 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <main className="bg-white p-6 rounded-xl shadow space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Edit Card</h1>
-
-      {error && (
-        <div className="bg-rose-100 text-rose-700 px-4 py-2 rounded-lg border border-rose-200">
-          {error}
+    <div className="max-w-2xl mx-auto p-6">
+      <main className="bg-white p-6 rounded-xl shadow space-y-6">
+        <div className="border-b pb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Edit Card</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Update the card information below
+          </p>
         </div>
-      )}
 
-      <div>
-        <label className="block text-sm font-semibold mb-1">Card Name</label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded px-3 py-2 text-base"
+        {error && (
+          <div className="bg-rose-50 text-rose-700 px-4 py-3 rounded-lg border border-rose-200 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Card Name
+          </label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            placeholder="Enter card name"
+            disabled={isSubmitting}
+          />
+        </div>
+
+        <button
+          onClick={updateCard}
           disabled={isSubmitting}
-        />
-      </div>
+          className={`w-full py-2.5 rounded-lg text-base font-medium transition-all ${
+            isSubmitting
+              ? "bg-green-600 text-white cursor-not-allowed opacity-90"
+              : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+          }`}
+        >
+          {isSubmitting ? (
+            <div className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Updating Card...
+            </div>
+          ) : (
+            "Update Card"
+          )}
+        </button>
 
-      <button
-        onClick={updateCard}
-        disabled={isSubmitting}
-        className={`w-full py-2 rounded text-lg font-semibold transition-colors ${
-          isSubmitting
-            ? "bg-green-600 text-white cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700"
-        }`}
-      >
-        {isSubmitting ? "Updating Card..." : "Update Card"}
-      </button>
-
-      {isSubmitting && (
-        <div className="text-center text-green-600 font-medium">
-          Card updated successfully! Redirecting...
-        </div>
-      )}
-    </main>
+        {isSubmitting && (
+          <div className="text-center py-3 bg-green-50 text-green-700 rounded-lg border border-green-200">
+            Card updated successfully! Redirecting...
+          </div>
+        )}
+      </main>
+    </div>
   );
 }
