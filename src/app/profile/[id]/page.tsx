@@ -182,123 +182,115 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-[calc(100vh-4rem)] overflow-y-auto bg-gray-50">
       <div className="py-6">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
-              <div className="flex justify-center mb-6">
-                <div className="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50">
+        <div className="max-w-md mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+            {/* Banner */}
+            <div className="h-28 w-full bg-gray-200" />
+            {/* Profile Image - overlaps banner */}
+            <div className="flex flex-col items-center -mt-14 mb-2">
+              <div className="relative w-28 h-28 rounded-full border-4 border-white bg-white overflow-hidden shadow-md">
+                {profile.image ? (
+                  <Image
+                    src={profile.image}
+                    alt={profile.name || "Profile picture"}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <span className="text-3xl font-medium text-gray-500">
+                      {profile.name?.[0]?.toUpperCase() || "?"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Profile Info */}
+            <div className="flex flex-col items-center px-6 pb-6">
+              {/* Name and Edit */}
+              {isEditing ? (
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="px-3 py-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-center"
+                    placeholder="Enter your name"
+                    maxLength={24}
+                  />
                   <button
-                    onClick={() => setActiveTab("profile")}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                      activeTab === "profile"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    onClick={handleUpdateProfile}
+                    className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
                   >
-                    Profile
+                    <Check className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => setActiveTab("history")}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                      activeTab === "history"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditedName(profile.name || "");
+                    }}
+                    className="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
                   >
-                    Voting History
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
+              ) : (
+                <div className="flex items-center gap-2 mb-2">
+                  <h1 className="text-2xl font-bold text-gray-900 text-center">
+                    {profile.name}
+                  </h1>
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
+                      title="Edit name"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              )}
+              {/* ID and Copy */}
+              <div className="flex items-center gap-2 text-sm text-gray-500 font-mono mb-2">
+                <span>ID: {profile.id}</span>
+                <button
+                  onClick={() => copyToClipboard(profile.id)}
+                  className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors hover:bg-gray-100"
+                  title="Copy to clipboard"
+                >
+                  {copied ? (
+                    <CheckCheck className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
               </div>
-
+              {/* Tabs */}
+              <div className="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50 mb-4">
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    activeTab === "profile"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => setActiveTab("history")}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    activeTab === "history"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Voting History
+                </button>
+              </div>
+              {/* Tab Content */}
               {activeTab === "profile" ? (
-                <div className="space-y-0">
-                  {/* Profile Image and Username */}
-                  <div className="flex flex-col items-center gap-4 pb-4">
-                    <div className="relative">
-                      <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-100 shadow-sm">
-                        {profile.image ? (
-                          <Image
-                            src={profile.image}
-                            alt={profile.name || "Profile picture"}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                            <span className="text-2xl font-medium text-gray-500">
-                              {profile.name?.[0]?.toUpperCase() || "?"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-1">
-                      {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={editedName}
-                            onChange={(e) => setEditedName(e.target.value)}
-                            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your name"
-                            maxLength={24}
-                          />
-                          <button
-                            onClick={handleUpdateProfile}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
-                          >
-                            <Check className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setIsEditing(false);
-                              setEditedName(profile.name || "");
-                            }}
-                            className="p-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <h1 className="text-xl font-semibold text-gray-900">
-                              {profile.name}
-                            </h1>
-                            {isOwnProfile && (
-                              <button
-                                onClick={() => setIsEditing(true)}
-                                className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <code className="text-xs text-gray-500 font-mono">
-                              ID: {profile.id}
-                            </code>
-                            <button
-                              onClick={() => copyToClipboard(profile.id)}
-                              className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors hover:bg-gray-50"
-                              title="Copy to clipboard"
-                            >
-                              {copied ? (
-                                <CheckCheck className="w-3 h-3 text-green-600" />
-                              ) : (
-                                <Copy className="w-3 h-3" />
-                              )}
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100" />
-
-                  {/* Role Field */}
+                <div className="w-full">
                   <div className="py-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Role
@@ -322,10 +314,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       </p>
                     </div>
                   </div>
-
                   <div className="border-t border-gray-100" />
-
-                  {/* Member Since Field */}
                   <div className="py-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Joined
@@ -339,10 +328,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       </p>
                     </div>
                   </div>
-
                   <div className="border-t border-gray-100" />
-
-                  {/* Last Vote Field */}
                   <div className="py-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Last Vote
