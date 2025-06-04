@@ -1,4 +1,4 @@
-import "styles/globals.css";
+import "@/styles/globals.css";
 import Navigation from "@/components/Navigation";
 import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
