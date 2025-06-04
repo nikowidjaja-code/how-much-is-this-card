@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Accordion,
@@ -125,7 +125,7 @@ export default function CardList() {
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isStatsExpanded, setIsStatsExpanded] = useState(true);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
   const [deleteState, setDeleteState] = useState<DeleteState>({
     id: null,
     isDeleting: false,
@@ -249,36 +249,14 @@ export default function CardList() {
     return matchesValue && matchesSearch;
   });
 
-  const deleteCard = async (id: string) => {
-    setDeleteState({ id, isDeleting: true, error: null });
-    
-    try {
-      await fetch(`/api/cards/${id}`, {
-        method: "DELETE",
-      });
-      setCards((prevCards) => prevCards.filter((card) => card.id !== id));
-    } catch (error) {
-      setDeleteState((prev) => ({ ...prev, error: "Failed to delete card. Please try again later." }));
-    } finally {
-      setDeleteState({ id: null, isDeleting: false, error: null });
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      action();
-    }
-  };
-
   return (
     <div className="h-full flex flex-col">
-      <div className="py-2 sm:py-4 flex-none">
-        <div className="flex justify-between items-center mb-2 sm:mb-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Cards</h1>
+      <div className="py-4 flex-none">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-bold text-gray-800">All Cards</h1>
           <button
             onClick={() => setIsStatsExpanded(!isStatsExpanded)}
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            className="sm:hidden inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
             aria-expanded={isStatsExpanded}
             aria-controls="stats-section"
           >
@@ -296,42 +274,45 @@ export default function CardList() {
         <div
           id="stats-section"
           className={`grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out ${
-            isStatsExpanded ? 'max-h-[200px] opacity-100' : 'max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible'
+            isStatsExpanded
+              ? "max-h-[200px] opacity-100"
+              : "max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible"
           }`}
         >
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-sm text-gray-500 mb-1">Total Cards</div>
-            <div className="text-2xl font-bold text-gray-800">{cards.length}</div>
+            <div className="text-2xl font-bold text-gray-800">
+              {cards.length}
+            </div>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-sm text-gray-500 mb-1">Low Value</div>
             <div className="text-2xl font-bold text-emerald-600">
-              {cards.filter(card => card.value <= 0.25).length}
+              {cards.filter((card) => card.value <= 0.25).length}
             </div>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-sm text-gray-500 mb-1">Mid Value</div>
             <div className="text-2xl font-bold text-amber-600">
-              {cards.filter(card => card.value === 0.5).length}
+              {cards.filter((card) => card.value === 0.5).length}
             </div>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-sm text-gray-500 mb-1">High Value</div>
             <div className="text-2xl font-bold text-orange-600">
-              {cards.filter(card => card.value >= 0.75).length}
+              {cards.filter((card) => card.value >= 0.75).length}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 max-sm:landscape:grid-cols-4 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto] gap-2 sm:gap-4">
-          <div className="relative w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="relative w-full sm:w-64">
             <input
-              ref={searchInputRef}
               type="text"
-              placeholder="Search... (Ctrl+F)"
+              placeholder="Search by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               aria-label="Search cards"
             />
           </div>
@@ -342,7 +323,7 @@ export default function CardList() {
               const val = e.target.value;
               setValueFilter(val === "all" ? "all" : parseFloat(val));
             }}
-            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             aria-label="Filter by value"
           >
             <option value="all">All Values</option>
@@ -356,17 +337,17 @@ export default function CardList() {
             onChange={(e) =>
               setSortBy(e.target.value as "updatedAt" | "name" | "value")
             }
-            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             aria-label="Sort by"
           >
-            <option value="updatedAt">Recently Modified</option>
+            <option value="updatedAt">Recently Voted</option>
             <option value="name">Alphabetical</option>
             <option value="value">Value</option>
           </select>
 
           <button
             onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-            className="h-9 sm:h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-sm sm:text-base w-full landscape:w-11 sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             title={order === "asc" ? "Ascending" : "Descending"}
             aria-label={`Sort ${order === "asc" ? "ascending" : "descending"}`}
           >
@@ -375,7 +356,7 @@ export default function CardList() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden max-sm:landscape:hidden">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {loading ? (
           <div className="space-y-4" role="status" aria-label="Loading cards">
             {[...Array(5)].map((_, index) => (
@@ -423,30 +404,52 @@ export default function CardList() {
             )}
           </div>
         ) : (
-          <ul className="space-y-4 overflow-auto h-full scrollbar-thin scrollbar-thumb-gray-300/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-400/50 pr-2">
-            {filteredCards.map((card) => (
-              <li
-                key={card.id}
-                className={`py-4 px-5 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center border ${getCardStyle(
-                  card.value
-                )}`}
-              >
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <div className="text-base font-medium text-gray-700 capitalize font-sans truncate max-w-[200px] sm:max-w-none">
-                    {card.name.toLowerCase().split(' ').map(word => 
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')}
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
-                  <div className="flex items-center gap-3 text-xs text-gray-500 font-sans">
-                    <div
-                      className={`font-medium px-3 py-1 rounded-full ${getBadgeStyle(
-                        card.value
-                      )}`}
-                    >
-                      {card.value.toFixed(2)}
+          <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 relative">
+            <div className="absolute inset-y-0 right-0 w-2 bg-gradient-to-b from-transparent via-gray-100 to-transparent pointer-events-none"></div>
+            <Accordion type="single" collapsible className="space-y-4 pb-4">
+              {filteredCards.map((card) => (
+                <AccordionItem
+                  key={card.id}
+                  value={card.id}
+                  className={`border rounded-lg relative ${getCardStyle(
+                    card.value,
+                    card.mostVotedValues
+                  )}`}
+                >
+                  <AccordionTrigger className="px-5 py-4 hover:no-underline [&>svg]:ml-2 font-['Trebuchet_MS']">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="text-base font-medium text-gray-700 capitalize font-['Trebuchet_MS'] truncate max-w-[200px] sm:max-w-none">
+                          {card.name
+                            .toLowerCase()
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center w-full sm:w-auto">
+                        <div className="flex items-center gap-3 text-xs text-gray-500 font-['Trebuchet_MS'] w-full justify-end sm:justify-end sm:w-auto">
+                          <div
+                            className={`font-medium px-3 py-1 rounded-full flex items-center ${getBadgeStyle(
+                              card.value,
+                              card.mostVotedValues
+                            )}`}
+                          >
+                            {getValueDisplay(card.value, card.mostVotedValues)}
+                          </div>
+                          <span className="font-normal flex items-center justify-end min-w-[140px] ml-auto sm:ml-0">
+                            {card.lastVoteTime
+                              ? `Last vote: ${getRelativeTime(
+                                  card.lastVoteTime
+                                )}`
+                              : "No votes yet"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="bg-gray-50/50 py-3">
@@ -495,37 +498,11 @@ export default function CardList() {
         )}
       </div>
 
-      <div className="hidden max-sm:landscape:flex max-sm:landscape:flex-1 max-sm:landscape:items-center max-sm:landscape:justify-center">
-        <div className="text-center text-gray-500">
-          <p className="text-lg mb-2">Please rotate your device</p>
-          <p className="text-sm">For a better viewing experience of the cards list</p>
-        </div>
-      </div>
-
-      {/* Keyboard Shortcuts Help */}
-      <div className="fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm hidden lg:block">
-        <h3 className="font-semibold mb-2">Keyboard Shortcuts:</h3>
-        <ul className="space-y-1 text-gray-600">
-          <li>⌘/Ctrl + F: Focus search</li>
-          <li>⌘/Ctrl + S: Toggle sort order</li>
-          <li>↑/↓: Navigate cards</li>
-        </ul>
-      </div>
-
       {deleteState.error && (
         <div className="fixed bottom-4 right-4 bg-rose-100 text-rose-700 px-4 py-2 rounded-lg shadow-lg border border-rose-200 animate-fade-in">
           {deleteState.error}
         </div>
       )}
-
-      {/* Landscape Warning */}
-      <div className="hidden max-lg:landscape:flex fixed inset-0 bg-black/70 z-50 items-center justify-center text-white">
-        <div className="text-center px-4">
-          <div className="text-4xl mb-3">📱</div>
-          <p className="text-lg font-semibold mb-2">Please rotate your device</p>
-          <p className="text-sm opacity-80">For a better viewing experience</p>
-        </div>
-      </div>
     </div>
   );
 }
