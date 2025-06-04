@@ -5,7 +5,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
-import { Pencil, Check, X, Shield, Clock, ThumbsUp } from "lucide-react";
+import {
+  Pencil,
+  Check,
+  X,
+  Shield,
+  Clock,
+  ThumbsUp,
+  Copy,
+  CheckCheck,
+} from "lucide-react";
 import Image from "next/image";
 import VotingHistory from "@/components/VotingHistory";
 
@@ -29,6 +38,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const isOwnProfile = session?.user?.id === params.id;
 
@@ -81,6 +91,24 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
       toast({
         title: "Error",
         description: "Failed to update profile",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "User ID copied to clipboard",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to copy to clipboard",
         variant: "destructive",
       });
     }
@@ -238,18 +266,36 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <h1 className="text-xl font-semibold text-gray-900">
-                            {profile.name}
-                          </h1>
-                          {isOwnProfile && (
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-semibold text-gray-900">
+                              {profile.name}
+                            </h1>
+                            {isOwnProfile && (
+                              <button
+                                onClick={() => setIsEditing(true)}
+                                className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <code className="text-xs text-gray-500 font-mono">
+                              ID: {profile.id}
+                            </code>
                             <button
-                              onClick={() => setIsEditing(true)}
-                              className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
+                              onClick={() => copyToClipboard(profile.id)}
+                              className="p-1 text-gray-400 hover:text-gray-600 rounded-full transition-colors hover:bg-gray-50"
+                              title="Copy to clipboard"
                             >
-                              <Pencil className="w-4 h-4" />
+                              {copied ? (
+                                <CheckCheck className="w-3 h-3 text-green-600" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
                             </button>
-                          )}
+                          </div>
                         </div>
                       )}
                     </div>
