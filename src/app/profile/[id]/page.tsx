@@ -185,7 +185,10 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         <div className="max-w-md mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative max-h-[85vh]">
             {/* Banner */}
-            <div className="h-28 w-full bg-gray-200" />
+            <div className="h-28 w-full relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-600 via-slate-500 to-slate-400 opacity-90" />
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAzNGMwIDIuMjA5LTEuNzkxIDQtNCA0cy00LTEuNzkxLTQtNCAxLjc5MS00IDQtNCA0IDEuNzkxIDQgNHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-10" />
+            </div>
             {/* Profile Image - overlaps banner */}
             <div className="flex flex-col items-center -mt-14 mb-2">
               <div className="relative w-28 h-28 rounded-full border-4 border-white bg-white overflow-hidden shadow-md">
