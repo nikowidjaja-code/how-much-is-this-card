@@ -183,7 +183,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     <div className="min-h-[calc(100vh-4rem)] overflow-y-auto bg-gray-50">
       <div className="py-6">
         <div className="max-w-md mx-auto px-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative max-h-[85vh]">
             {/* Banner */}
             <div className="h-28 w-full bg-gray-200" />
             {/* Profile Image - overlaps banner */}
