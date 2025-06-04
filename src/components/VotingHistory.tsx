@@ -12,7 +12,11 @@ interface Vote {
   createdAt: string;
 }
 
-export default function VotingHistory() {
+interface VotingHistoryProps {
+  hideTitle?: boolean;
+}
+
+export default function VotingHistory({ hideTitle }: VotingHistoryProps) {
   const [votes, setVotes] = useState<Vote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,11 +106,13 @@ export default function VotingHistory() {
 
   return (
     <div>
-      <div className="mb-4">
-        <h3 className="text-base font-bold text-gray-700 border-b border-gray-200 pb-2 text-center">
-          Voting Activity
-        </h3>
-      </div>
+      {!hideTitle && (
+        <div className="mb-4">
+          <h3 className="text-base font-bold text-gray-700 border-b border-gray-200 pb-2 text-center">
+            Voting Activity
+          </h3>
+        </div>
+      )}
       <div className="max-h-[400px] overflow-y-auto pr-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
         {votes.map((vote) => (
           <div
