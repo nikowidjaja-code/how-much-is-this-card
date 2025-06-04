@@ -30,18 +30,18 @@ interface DeleteState {
 
 const getCardStyle = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1)
-    return "bg-purple-50/30 border-purple-100 hover:bg-purple-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-purple-50/30 border-purple-100 hover:bg-purple-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === -1)
-    return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value <= 0.25)
-    return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 0.5)
-    return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 0.75)
-    return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 1)
-    return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 hover:shadow-md transition-all duration-200";
-  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-md transition-all duration-200";
+    return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
+  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
 };
 
 const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {

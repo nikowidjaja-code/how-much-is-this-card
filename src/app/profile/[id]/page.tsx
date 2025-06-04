@@ -118,7 +118,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
       <div className="min-h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="py-6">
           <div className="max-w-2xl mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-200">
               <div className="p-6">
                 {/* Tabs Skeleton */}
                 <div className="flex justify-center mb-6">
@@ -185,7 +185,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         <div className="max-w-7xl mx-auto px-4">
           {/* Mobile Card View */}
           <div className="md:hidden">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative">
+            <div className="bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-200 overflow-hidden relative">
               {/* Banner */}
               <div className="h-32 w-full relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-600 via-slate-500 to-slate-400 opacity-90" />
