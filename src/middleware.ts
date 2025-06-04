@@ -7,13 +7,15 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute =
     request.nextUrl.pathname.startsWith("/add") ||
     request.nextUrl.pathname.startsWith("/edit");
+  const isProtectedRoute =
+    isAdminRoute || request.nextUrl.pathname === "/profile";
 
-  if (isAdminRoute) {
+  if (isProtectedRoute) {
     if (!token) {
-      return NextResponse.redirect(new URL("/cards", request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    if (token.role !== "ADMIN") {
+    if (isAdminRoute && token.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/cards", request.url));
     }
   }
@@ -22,5 +24,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/add/:path*", "/edit/:path*"],
+  matcher: ["/add/:path*", "/edit/:path*", "/profile"],
 };
