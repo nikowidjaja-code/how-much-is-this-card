@@ -22,7 +22,6 @@ export async function GET(
       select: {
         id: true,
         name: true,
-        email: true,
         role: true,
         image: true,
         createdAt: true,
@@ -46,7 +45,6 @@ export async function GET(
     return NextResponse.json({
       id: user.id,
       name: user.name,
-      email: user.email,
       role: user.role,
       image: user.image,
       createdAt: user.createdAt,

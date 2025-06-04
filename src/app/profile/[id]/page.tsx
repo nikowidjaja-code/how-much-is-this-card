@@ -21,7 +21,6 @@ import VotingHistory from "@/components/VotingHistory";
 interface UserProfile {
   id: string;
   name: string;
-  email: string;
   role: string;
   image: string | null;
   createdAt: string;
@@ -137,12 +136,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     <div className="flex-1">
                       <div className="h-7 w-48 bg-gray-200 rounded animate-pulse"></div>
                     </div>
-                  </div>
-
-                  {/* Email Field */}
-                  <div>
-                    <div className="h-4 w-16 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                    <div className="h-5 w-64 bg-gray-200 rounded animate-pulse"></div>
                   </div>
 
                   {/* Role Field */}
@@ -299,16 +292,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         </div>
                       )}
                     </div>
-                  </div>
-
-                  <div className="border-t border-gray-100" />
-
-                  {/* Email Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-0.5">
-                      Email
-                    </label>
-                    <p className="text-sm text-gray-900">{profile.email}</p>
                   </div>
 
                   <div className="border-t border-gray-100" />

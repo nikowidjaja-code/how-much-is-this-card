@@ -27,7 +27,6 @@ interface Vote {
   user: {
     id: string;
     name: string;
-    email: string;
     image?: string;
     role: string;
   };
@@ -448,9 +447,6 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                           </button>
                           <div>
                             <p className="font-medium">{vote.user.name}</p>
-                            <p className="text-xs text-gray-500">
-                              {vote.user.email}
-                            </p>
                             {vote.user.role === "ADMIN" && (
                               <span className="text-xs text-indigo-600">
                                 Admin
