@@ -117,52 +117,108 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="py-6">
-          <div className="max-w-2xl mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-200">
-              <div className="p-6">
-                {/* Tabs Skeleton */}
-                <div className="flex justify-center mb-6">
-                  <div className="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4">
+            {/* Mobile Skeleton */}
+            <div className="md:hidden">
+              <div className="bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-200 overflow-hidden">
+                {/* Banner Skeleton */}
+                <div className="h-32 w-full bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse"></div>
+
+                {/* Profile Content Skeleton */}
+                <div className="flex flex-col items-center px-6 pb-6">
+                  {/* Profile Image Skeleton */}
+                  <div className="flex flex-col items-center -mt-14 mb-4">
+                    <div className="w-28 h-28 rounded-full border-4 border-white bg-gray-200 animate-pulse"></div>
+                  </div>
+
+                  {/* Name Skeleton */}
+                  <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
+
+                  {/* ID Skeleton */}
+                  <div className="h-5 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+
+                  {/* Tabs Skeleton */}
+                  <div className="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50 mb-4">
                     <div className="h-9 w-24 bg-gray-200 rounded-md animate-pulse"></div>
                     <div className="h-9 w-24 bg-gray-200 rounded-md animate-pulse"></div>
+                  </div>
+
+                  {/* Profile Info Skeleton */}
+                  <div className="w-full space-y-4">
+                    <div className="space-y-2">
+                      <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                    <div className="border-t border-gray-100"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-40 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                    <div className="border-t border-gray-100"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-36 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Skeleton */}
+            <div className="hidden md:block">
+              {/* Top Section - Profile Header */}
+              <div className="flex items-center gap-8 mb-12 bg-gradient-to-r from-slate-50 to-white p-8 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
+                {/* Profile Image Skeleton */}
+                <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 animate-pulse"></div>
+
+                {/* Profile Info Skeleton */}
+                <div className="flex-1 space-y-4">
+                  <div className="h-10 w-64 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="flex items-center gap-6">
+                    <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-5 w-24 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="grid grid-cols-12 gap-8">
+                {/* Left Column - Stats */}
+                <div className="col-span-3">
+                  <div className="sticky top-6">
+                    <div className="p-6 bg-gradient-to-b from-indigo-50/50 to-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
+                      <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-4"></div>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-5 w-40 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-5 w-36 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Profile Content Skeleton */}
-                <div className="space-y-6">
-                  {/* Profile Image and Username */}
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-24 h-24 rounded-full bg-gray-200 animate-pulse"></div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="h-7 w-48 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-
-                  {/* Role Field */}
-                  <div>
-                    <div className="h-4 w-12 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-20 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-
-                  {/* Member Since Field */}
-                  <div>
-                    <div className="h-4 w-16 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-
-                  {/* Last Vote Field */}
-                  <div>
-                    <div className="h-4 w-20 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-28 bg-gray-200 rounded animate-pulse"></div>
+                {/* Right Column - Voting History */}
+                <div className="col-span-9">
+                  <div className="p-6 bg-gradient-to-b from-slate-50/50 to-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
+                    <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-6"></div>
+                    <div className="space-y-4">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-100"
+                        >
+                          <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
+                            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
