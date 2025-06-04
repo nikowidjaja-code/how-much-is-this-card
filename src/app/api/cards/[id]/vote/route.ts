@@ -16,6 +16,7 @@ export async function GET(
       include: {
         user: {
           select: {
+            id: true,
             email: true,
             name: true,
             image: true,
@@ -173,6 +174,7 @@ export async function POST(
       include: {
         user: {
           select: {
+            id: true,
             email: true,
             name: true,
             image: true,

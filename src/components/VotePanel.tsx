@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -10,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface VotePanelProps {
   cardId: string;
@@ -22,6 +25,7 @@ interface VoteDistribution {
 
 interface Vote {
   user: {
+    id: string;
     name: string;
     email: string;
     image?: string;
@@ -48,6 +52,7 @@ interface VoteData {
 
 export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voteData, setVoteData] = useState<VoteData | null>(null);
@@ -169,6 +174,12 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
       return "2-4 weeks: 0.25 → 0.1";
     } else {
       return "After 1 month: 0.1";
+    }
+  };
+
+  const handleProfileClick = (userId: string) => {
+    if (userId) {
+      router.push(`/profile/${userId}`);
     }
   };
 
@@ -406,29 +417,35 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                         align="center"
                       >
                         <div className="flex items-center gap-3">
-                          <div
-                            className={`w-10 h-10 rounded-full overflow-hidden border-2 ${
-                              vote.value === 0.25
-                                ? "border-emerald-500"
-                                : vote.value === 0.5
-                                ? "border-amber-500"
-                                : "border-blue-500"
-                            }`}
+                          <button
+                            onClick={() => handleProfileClick(vote.user.id)}
+                            className="relative group focus:outline-none"
                           >
-                            {vote.user.image ? (
-                              <Image
-                                src={vote.user.image}
-                                alt={vote.user.name}
-                                width={40}
-                                height={40}
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                                {vote.user.name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                          </div>
+                            <div
+                              className={`w-10 h-10 rounded-full overflow-hidden border-2 ${
+                                vote.value === 0.25
+                                  ? "border-emerald-500"
+                                  : vote.value === 0.5
+                                  ? "border-amber-500"
+                                  : "border-blue-500"
+                              }`}
+                            >
+                              {vote.user.image ? (
+                                <Image
+                                  src={vote.user.image}
+                                  alt={vote.user.name}
+                                  width={40}
+                                  height={40}
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                  {vote.user.name.charAt(0).toUpperCase()}
+                                </div>
+                              )}
+                            </div>
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all" />
+                          </button>
                           <div>
                             <p className="font-medium">{vote.user.name}</p>
                             <p className="text-xs text-gray-500">
