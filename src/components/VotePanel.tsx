@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 interface VotePanelProps {
   cardId: string;
@@ -55,6 +56,11 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voteData, setVoteData] = useState<VoteData | null>(null);
+  const [openTooltipId, setOpenTooltipId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<"top" | "bottom">(
+    "bottom"
+  );
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -185,6 +191,23 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
     }
   };
 
+  // Function to check if popup would overflow
+  const checkPopupPosition = (buttonElement: HTMLButtonElement) => {
+    const rect = buttonElement.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    setPopupPosition(
+      spaceBelow < 200 && spaceAbove > spaceBelow ? "top" : "bottom"
+    );
+  };
+
+  const handleVotePowerClick = (value: string) => {
+    if (buttonRef.current) {
+      checkPopupPosition(buttonRef.current);
+    }
+    setOpenTooltipId(openTooltipId === value ? null : value);
+  };
+
   return (
     <div className="px-8 py-2 space-y-3">
       {error && (
@@ -308,18 +331,50 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                       <span className="text-xs text-gray-400">
                         ({rawCount} votes)
                       </span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="text-xs text-gray-400 cursor-help">
-                              (Voting Power: {totalVotingPower.toFixed(2)})
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="text-xs p-2">
-                            <p>Voting power breakdown:</p>
-                            <ul className="list-disc list-inside mt-1">
+                      <div className="relative">
+                        <button
+                          ref={buttonRef}
+                          onClick={() => handleVotePowerClick(value)}
+                          className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <span>
+                            Voting Power: {totalVotingPower.toFixed(2)}
+                          </span>
+                        </button>
+
+                        {openTooltipId === value && (
+                          <div
+                            className={`absolute z-50 ${
+                              popupPosition === "top"
+                                ? "bottom-full mb-2"
+                                : "top-full mt-2"
+                            } right-0 p-3 bg-white rounded-lg shadow-lg border border-gray-200 w-64 max-h-[200px] overflow-y-auto`}
+                          >
+                            <button
+                              onClick={() => setOpenTooltipId(null)}
+                              className="absolute top-1 right-1 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                              <X className="w-3 h-3 text-gray-500" />
+                            </button>
+                            <p className="pr-4 font-medium mb-2">
+                              Voting power breakdown:
+                            </p>
+                            <ul className="list-disc list-inside mt-1 space-y-1">
                               {votesForValue.map((vote, index) => (
-                                <li key={index}>
+                                <li key={index} className="text-xs">
                                   {vote.user.name} (
                                   {vote.user.role === "ADMIN"
                                     ? "Admin"
@@ -333,9 +388,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                 </li>
                               ))}
                             </ul>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
