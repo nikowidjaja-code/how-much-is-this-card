@@ -157,13 +157,7 @@ export default function Navigation() {
                       {session.user?.email}
                     </p>
                     <p className="text-xs mt-1">
-                      <span
-                        className={`${
-                          session.user?.role === "ADMIN"
-                            ? "text-indigo-600"
-                            : "text-gray-500"
-                        }`}
-                      >
+                      <span className="text-indigo-600">
                         {session.user?.role === "ADMIN" ? "Admin" : "User"}
                       </span>
                     </p>

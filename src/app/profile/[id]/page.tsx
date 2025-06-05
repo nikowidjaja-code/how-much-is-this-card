@@ -359,20 +359,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         Role
                       </label>
                       <div className="flex items-center gap-2">
-                        <Shield
-                          className={`w-4 h-4 ${
-                            profile.role === "ADMIN"
-                              ? "text-indigo-600"
-                              : "text-gray-500"
-                          }`}
-                        />
-                        <p
-                          className={`text-sm ${
-                            profile.role === "ADMIN"
-                              ? "text-indigo-600"
-                              : "text-gray-900"
-                          }`}
-                        >
+                        <Shield className={`w-4 h-4 text-indigo-600`} />
+                        <p className={`text-sm text-indigo-600`}>
                           {profile.role === "ADMIN" ? "Admin" : "User"}
                         </p>
                       </div>
@@ -501,20 +489,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Shield
-                      className={`w-4 h-4 ${
-                        profile.role === "ADMIN"
-                          ? "text-indigo-600"
-                          : "text-gray-500"
-                      }`}
-                    />
-                    <p
-                      className={`text-sm ${
-                        profile.role === "ADMIN"
-                          ? "text-indigo-600"
-                          : "text-gray-900"
-                      }`}
-                    >
+                    <Shield className={`w-4 h-4 text-indigo-600`} />
+                    <p className={`text-sm text-indigo-600`}>
                       {profile.role === "ADMIN" ? "Admin" : "User"}
                     </p>
                   </div>

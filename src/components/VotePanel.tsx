@@ -417,11 +417,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                           </button>
                           <div>
                             <p className="font-medium">{vote.user.name}</p>
-                            {vote.user.role === "ADMIN" && (
-                              <span className="text-xs text-indigo-600">
-                                Admin
-                              </span>
-                            )}
+                            <span className="text-xs text-indigo-600">
+                              {vote.user.role === "ADMIN" ? "Admin" : "User"}
+                            </span>
                           </div>
                         </div>
 
