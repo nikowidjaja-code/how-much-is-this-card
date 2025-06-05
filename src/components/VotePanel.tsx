@@ -228,59 +228,12 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
               <h3 className="text-sm font-medium text-gray-700 font-['Trebuchet_MS']">
                 Vote Weights
               </h3>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[300px] p-3">
-                    <p className="text-sm font-medium mb-2">
-                      How votes are weighted:
-                    </p>
-                    <div className="space-y-2 text-xs">
-                      <div className="flex items-start gap-2">
-                        <div className="w-2 h-2 rounded-full bg-indigo-500 mt-1.5"></div>
-                        <div>
-                          <p className="font-medium">Admin Votes</p>
-                          <p className="text-gray-500">
-                            5x weight to ensure important decisions
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5"></div>
-                        <div>
-                          <p className="font-medium">Time Decay</p>
-                          <p className="text-gray-500">
-                            Votes lose weight over time to reflect current
-                            opinions
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </div>
 
-            <div className="flex gap-3 text-xs text-gray-600">
-              <div className="flex items-center gap-1.5">
+            <div className="space-y-3 text-sm text-gray-600 mb-4">
+              <div className="flex items-start gap-2">
                 <svg
-                  className="w-3.5 h-3.5 text-indigo-500"
+                  className="w-3.5 h-3.5 text-indigo-500 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -292,11 +245,16 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                     d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>Admin: 5x</span>
+                <div>
+                  <p className="font-medium">Admin Votes</p>
+                  <p className="text-xs text-gray-500">
+                    5x weight to ensure important decisions
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-start gap-2">
                 <svg
-                  className="w-3.5 h-3.5 text-blue-500"
+                  className="w-3.5 h-3.5 text-blue-500 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -308,7 +266,18 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>Time: 1.0x → 0.1x</span>
+                <div>
+                  <p className="font-medium">Time Decay</p>
+                  <p className="text-xs text-gray-500">
+                    Votes lose weight over time to reflect current opinions:
+                  </p>
+                  <ul className="text-xs text-gray-500 list-disc list-inside mt-1 space-y-0.5">
+                    <li>First week: 1.0x → 0.5x</li>
+                    <li>Second week: 0.5x → 0.25x</li>
+                    <li>2-4 weeks: 0.25x → 0.1x</li>
+                    <li>After 1 month: 0.1x</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
