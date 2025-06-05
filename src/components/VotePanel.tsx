@@ -56,11 +56,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voteData, setVoteData] = useState<VoteData | null>(null);
-  const [openTooltipId, setOpenTooltipId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<"top" | "bottom">(
-    "bottom"
+  const [selectedVoteValue, setSelectedVoteValue] = useState<string | null>(
+    null
   );
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -191,21 +189,13 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
     }
   };
 
-  // Function to check if popup would overflow
-  const checkPopupPosition = (buttonElement: HTMLButtonElement) => {
-    const rect = buttonElement.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    setPopupPosition(
-      spaceBelow < 200 && spaceAbove > spaceBelow ? "top" : "bottom"
-    );
+  const handleVotePowerClick = (value: string) => {
+    setSelectedVoteValue(value);
   };
 
-  const handleVotePowerClick = (value: string) => {
-    if (buttonRef.current) {
-      checkPopupPosition(buttonRef.current);
-    }
-    setOpenTooltipId(openTooltipId === value ? null : value);
+  const getVotesForValue = (value: string): Vote[] => {
+    if (!voteData) return [];
+    return voteData.voteDetails.filter((v) => v.value === Number(value));
   };
 
   return (
@@ -331,66 +321,25 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                       <span className="text-xs text-gray-400">
                         ({rawCount} votes)
                       </span>
-                      <div className="relative">
-                        <button
-                          ref={buttonRef}
-                          onClick={() => handleVotePowerClick(value)}
-                          className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      <button
+                        onClick={() => setSelectedVoteValue(value)}
+                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          <svg
-                            className="w-3.5 h-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span>
-                            Voting Power: {totalVotingPower.toFixed(2)}
-                          </span>
-                        </button>
-
-                        {openTooltipId === value && (
-                          <div
-                            className={`absolute z-50 ${
-                              popupPosition === "top"
-                                ? "bottom-full mb-2"
-                                : "top-full mt-2"
-                            } right-0 p-3 bg-white rounded-lg shadow-lg border border-gray-200 w-64 max-h-[200px] overflow-y-auto`}
-                          >
-                            <button
-                              onClick={() => setOpenTooltipId(null)}
-                              className="absolute top-1 right-1 p-1 hover:bg-gray-100 rounded-full transition-colors"
-                            >
-                              <X className="w-3 h-3 text-gray-500" />
-                            </button>
-                            <p className="pr-4 font-medium mb-2">
-                              Voting power breakdown:
-                            </p>
-                            <ul className="list-disc list-inside mt-1 space-y-1">
-                              {votesForValue.map((vote, index) => (
-                                <li key={index} className="text-xs">
-                                  {vote.user.name} (
-                                  {vote.user.role === "ADMIN"
-                                    ? "Admin"
-                                    : "User"}
-                                  ): {vote.roleWeight}x role ×{" "}
-                                  {vote.timeWeight.toFixed(2)}x time ={" "}
-                                  {(vote.roleWeight * vote.timeWeight).toFixed(
-                                    2
-                                  )}
-                                  x
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>Voting Power: {totalVotingPower.toFixed(2)}</span>
+                      </button>
                     </div>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -405,6 +354,76 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
               );
             })}
           </div>
+
+          {selectedVoteValue && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-2 h-2 rounded-full ${getVoteColor(
+                        Number(selectedVoteValue)
+                      )}`}
+                    />
+                    <h3 className="font-medium text-gray-900">
+                      Voting Power Details
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setSelectedVoteValue(null)}
+                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+                <div className="p-4 overflow-y-auto max-h-[calc(90vh-4rem)]">
+                  <div className="space-y-3">
+                    {getVotesForValue(selectedVoteValue).map(
+                      (vote: Vote, index: number) => (
+                        <div key={index} className="bg-gray-50 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-gray-900">
+                              {vote.user.name}
+                            </span>
+                            <span
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                vote.user.role === "ADMIN"
+                                  ? "bg-indigo-100 text-indigo-700"
+                                  : "bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {vote.user.role === "ADMIN" ? "Admin" : "User"}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Role weight</span>
+                              <span className="font-medium">
+                                {vote.roleWeight}x
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Time weight</span>
+                              <span className="font-medium">
+                                {vote.timeWeight.toFixed(2)}x
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between pt-1.5 border-t border-gray-200">
+                              <span className="text-gray-500">Total power</span>
+                              <span className="font-medium text-gray-900">
+                                {(vote.roleWeight * vote.timeWeight).toFixed(2)}
+                                x
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {voteData.voteDetails.length > 0 && (
             <div className="mt-4 space-y-2">
