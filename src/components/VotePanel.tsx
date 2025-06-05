@@ -107,10 +107,23 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
 
       const data = await response.json();
       setVoteData(data);
-      toast({
-        title: "Vote recorded",
-        description: `Your vote of ${value} has been recorded.`,
-      });
+
+      // Check if the vote was cancelled (user clicked the same value)
+      const userVote = data.votes.find(
+        (v: any) => v.user.id === session.user.id
+      );
+      if (!userVote) {
+        toast({
+          title: "Vote cancelled",
+          description: "Your vote has been cancelled.",
+        });
+      } else {
+        toast({
+          title: "Vote recorded",
+          description: `Your vote of ${value} has been recorded.`,
+        });
+      }
+
       onVoteSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to vote");

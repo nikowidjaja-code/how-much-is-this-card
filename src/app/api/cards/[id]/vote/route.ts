@@ -151,23 +151,45 @@ export async function POST(
       },
     });
 
-    // Create or update vote for this user
-    const vote = await prisma.vote.upsert({
+    // Get existing vote if any
+    const existingVote = await prisma.vote.findUnique({
       where: {
         cardId_userId: {
           cardId: params.id,
           userId: user.id,
         },
       },
-      update: {
-        value,
-      },
-      create: {
-        value,
-        cardId: params.id,
-        userId: user.id,
-      },
     });
+
+    // If the new vote value matches the existing vote, delete the vote (cancel it)
+    if (existingVote && existingVote.value === value) {
+      await prisma.vote.delete({
+        where: {
+          cardId_userId: {
+            cardId: params.id,
+            userId: user.id,
+          },
+        },
+      });
+    } else {
+      // Create or update vote for this user
+      await prisma.vote.upsert({
+        where: {
+          cardId_userId: {
+            cardId: params.id,
+            userId: user.id,
+          },
+        },
+        update: {
+          value,
+        },
+        create: {
+          value,
+          cardId: params.id,
+          userId: user.id,
+        },
+      });
+    }
 
     // Get all votes for this card, including votes from all users
     const votes = await prisma.vote.findMany({
@@ -249,7 +271,6 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      vote,
       voteDistribution: voteGroups,
       mostVotedValues: mostVotedValues.sort((a, b) => a - b), // Sort for consistent display
       finalValue,
