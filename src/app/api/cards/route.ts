@@ -51,7 +51,9 @@ export async function GET(req: NextRequest) {
         );
 
         let timeWeight = 1;
-        if (daysSinceVote <= 7) {
+        if (daysSinceVote > 365) {
+          timeWeight = 0; // Votes older than a year have no weight
+        } else if (daysSinceVote <= 7) {
           timeWeight = 1 - daysSinceVote / 14; // 7 days = 0.5
         } else if (daysSinceVote <= 14) {
           timeWeight = 0.5 - (daysSinceVote - 7) / 28; // 14 days = 0.25
@@ -61,8 +63,8 @@ export async function GET(req: NextRequest) {
           timeWeight = 0.1;
         }
 
-        // Clamp minimum weight
-        timeWeight = Math.max(timeWeight, 0.1);
+        // Clamp minimum weight (only for votes less than a year old)
+        timeWeight = daysSinceVote <= 365 ? Math.max(timeWeight, 0.1) : 0;
 
         // 3. Final Score
         return {

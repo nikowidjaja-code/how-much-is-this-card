@@ -166,14 +166,16 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
   };
 
   const getTimeWeightExplanation = (daysSinceVote: number) => {
-    if (daysSinceVote <= 7) {
+    if (daysSinceVote > 365) {
+      return "After 1 year: 0x (expired)";
+    } else if (daysSinceVote <= 7) {
       return "First week: 1.0 → 0.5";
     } else if (daysSinceVote <= 14) {
       return "Second week: 0.5 → 0.25";
     } else if (daysSinceVote <= 30) {
       return "2-4 weeks: 0.25 → 0.1";
     } else {
-      return "After 1 month: 0.1";
+      return "1 month to 1 year: 0.1";
     }
   };
 
@@ -275,7 +277,8 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                     <li>First week: 1.0x → 0.5x</li>
                     <li>Second week: 0.5x → 0.25x</li>
                     <li>2-4 weeks: 0.25x → 0.1x</li>
-                    <li>After 1 month: 0.1x</li>
+                    <li>1 month to 1 year: 0.1x</li>
+                    <li>After 1 year: 0x (expired)</li>
                   </ul>
                 </div>
               </div>
