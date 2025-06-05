@@ -292,17 +292,14 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
               const votesForValue = voteData.voteDetails.filter(
                 (v) => v.value === Number(value)
               );
-              const avgTimeWeight =
-                votesForValue.reduce((sum, v) => sum + v.timeWeight, 0) /
-                votesForValue.length;
-              const avgRoleWeight =
-                votesForValue.reduce((sum, v) => sum + v.roleWeight, 0) /
-                votesForValue.length;
-              const avgWeight = avgTimeWeight * avgRoleWeight;
+              const totalVotingPower = votesForValue.reduce(
+                (sum, v) => sum + v.roleWeight * v.timeWeight,
+                0
+              );
 
               return (
                 <div key={value} className="space-y-1">
-                  <div className="flex justify-between text-sm font-['Trebuchet_MS']">
+                  <div className="flex items-center justify-between">
                     <span className="text-gray-700">
                       {getVoteLabel(Number(value))}
                     </span>
@@ -315,14 +312,26 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="text-xs text-gray-400 cursor-help">
-                              (Avg: {avgWeight.toFixed(2)}x)
+                              (Voting Power: {totalVotingPower.toFixed(2)})
                             </span>
                           </TooltipTrigger>
                           <TooltipContent className="text-xs p-2">
-                            <p>Average weights:</p>
+                            <p>Voting power breakdown:</p>
                             <ul className="list-disc list-inside mt-1">
-                              <li>Time: {avgTimeWeight.toFixed(2)}x</li>
-                              <li>Role: {avgRoleWeight.toFixed(1)}x</li>
+                              {votesForValue.map((vote, index) => (
+                                <li key={index}>
+                                  {vote.user.name} (
+                                  {vote.user.role === "ADMIN"
+                                    ? "Admin"
+                                    : "User"}
+                                  ): {vote.roleWeight}x role ×{" "}
+                                  {vote.timeWeight.toFixed(2)}x time ={" "}
+                                  {(vote.roleWeight * vote.timeWeight).toFixed(
+                                    2
+                                  )}
+                                  x
+                                </li>
+                              ))}
                             </ul>
                           </TooltipContent>
                         </Tooltip>
