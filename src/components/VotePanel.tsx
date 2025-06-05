@@ -198,6 +198,14 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
     return voteData.voteDetails.filter((v) => v.value === Number(value));
   };
 
+  const getUserVote = (): number | null => {
+    if (!voteData || !session?.user?.id) return null;
+    const userVote = voteData.voteDetails.find(
+      (vote) => vote.user.id === session.user.id
+    );
+    return userVote ? userVote.value : null;
+  };
+
   return (
     <div className="px-8 py-2 space-y-3">
       {error && (
@@ -212,7 +220,11 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           disabled={isVoting}
           variant="outline"
           size="sm"
-          className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200 font-['Trebuchet_MS']"
+          className={`font-['Trebuchet_MS'] ${
+            getUserVote() === 0.25
+              ? "bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600"
+              : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200"
+          }`}
         >
           Low (0.25)
         </Button>
@@ -221,7 +233,11 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           disabled={isVoting}
           variant="outline"
           size="sm"
-          className="bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200 font-['Trebuchet_MS']"
+          className={`font-['Trebuchet_MS'] ${
+            getUserVote() === 0.5
+              ? "bg-amber-600 text-white hover:bg-amber-700 border-amber-600"
+              : "bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200"
+          }`}
         >
           Mid (0.5)
         </Button>
@@ -230,7 +246,11 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           disabled={isVoting}
           variant="outline"
           size="sm"
-          className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200 font-['Trebuchet_MS']"
+          className={`font-['Trebuchet_MS'] ${
+            getUserVote() === 1.0
+              ? "bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
+              : "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
+          }`}
         >
           High (1.0)
         </Button>
