@@ -346,7 +346,7 @@ export default function CardList() {
 
         <div
           id="stats-section"
-          className={`grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6 transition-all duration-300 ease-in-out ${
+          className={`grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 mb-6 transition-all duration-300 ease-in-out ${
             isStatsExpanded
               ? "max-h-[200px] opacity-100"
               : "max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible"
@@ -362,10 +362,18 @@ export default function CardList() {
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-xs sm:text-sm text-gray-500 mb-1">
+              Unvalued
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-600">
+              {cards.filter((card) => card.value === -1).length}
+            </div>
+          </div>
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
               Low Value
             </div>
             <div className="text-lg sm:text-2xl font-bold text-emerald-600">
-              {cards.filter((card) => card.value <= 0.25).length}
+              {cards.filter((card) => card.value === 0.25).length}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
