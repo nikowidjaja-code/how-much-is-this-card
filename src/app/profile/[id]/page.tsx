@@ -132,32 +132,32 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   </div>
 
                   {/* Name Skeleton */}
-                  <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-8 w-32 max-w-full bg-gray-200 rounded animate-pulse mb-2"></div>
 
                   {/* ID Skeleton */}
-                  <div className="h-5 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+                  <div className="h-5 w-24 max-w-full bg-gray-200 rounded animate-pulse mb-4"></div>
 
                   {/* Tabs Skeleton */}
                   <div className="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50 mb-4">
-                    <div className="h-9 w-24 bg-gray-200 rounded-md animate-pulse"></div>
-                    <div className="h-9 w-24 bg-gray-200 rounded-md animate-pulse"></div>
+                    <div className="h-9 w-20 bg-gray-200 rounded-md animate-pulse"></div>
+                    <div className="h-9 w-20 bg-gray-200 rounded-md animate-pulse"></div>
                   </div>
 
                   {/* Profile Info Skeleton */}
                   <div className="w-full space-y-4">
                     <div className="space-y-2">
+                      <div className="h-4 w-12 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-24 max-w-full bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                    <div className="border-t border-gray-100"></div>
+                    <div className="space-y-2">
                       <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-28 max-w-full bg-gray-200 rounded animate-pulse"></div>
                     </div>
                     <div className="border-t border-gray-100"></div>
                     <div className="space-y-2">
                       <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-40 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                    <div className="border-t border-gray-100"></div>
-                    <div className="space-y-2">
-                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-5 w-36 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-5 w-32 max-w-full bg-gray-200 rounded animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -169,14 +169,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               {/* Top Section - Profile Header */}
               <div className="flex items-center gap-8 mb-12 bg-gradient-to-r from-slate-50 to-white p-8 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
                 {/* Profile Image Skeleton */}
-                <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 animate-pulse"></div>
+                <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 animate-pulse flex-shrink-0"></div>
 
                 {/* Profile Info Skeleton */}
-                <div className="flex-1 space-y-4">
-                  <div className="h-10 w-64 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="flex items-center gap-6">
-                    <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-5 w-24 bg-gray-200 rounded animate-pulse"></div>
+                <div className="flex-1 space-y-4 min-w-0">
+                  <div className="h-10 w-48 max-w-full bg-gray-200 rounded animate-pulse"></div>
+                  <div className="flex items-center gap-6 flex-wrap">
+                    <div className="h-5 w-36 max-w-full bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-5 w-20 max-w-full bg-gray-200 rounded animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -187,15 +187,15 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="col-span-3">
                   <div className="sticky top-6">
                     <div className="p-6 bg-gradient-to-b from-indigo-50/50 to-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
-                      <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-4"></div>
+                      <div className="h-6 w-20 bg-gray-200 rounded animate-pulse mb-4"></div>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-5 w-40 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-5 w-32 max-w-full bg-gray-200 rounded animate-pulse"></div>
                         </div>
                         <div className="space-y-2">
-                          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-5 w-36 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-5 w-28 max-w-full bg-gray-200 rounded animate-pulse"></div>
                         </div>
                       </div>
                     </div>
@@ -205,17 +205,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Right Column - Voting History */}
                 <div className="col-span-9">
                   <div className="p-6 bg-gradient-to-b from-slate-50/50 to-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
-                    <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-6"></div>
+                    <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-6"></div>
                     <div className="space-y-4">
                       {[...Array(3)].map((_, i) => (
                         <div
                           key={i}
                           className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-100"
                         >
-                          <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse"></div>
-                          <div className="flex-1 space-y-2">
-                            <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
-                            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse flex-shrink-0"></div>
+                          <div className="flex-1 space-y-2 min-w-0">
+                            <div className="h-5 w-40 max-w-full bg-gray-200 rounded animate-pulse"></div>
+                            <div className="h-4 w-24 max-w-full bg-gray-200 rounded animate-pulse"></div>
                           </div>
                         </div>
                       ))}
