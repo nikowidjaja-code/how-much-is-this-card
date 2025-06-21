@@ -5,10 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import LandscapeWarning from "@/components/LandscapeWarning";
 
 export const metadata = {
-  title: "CUE Card Vault",
+  title: "How Much is This Card?",
   description:
-    "Track card values in the Cards, the Universe, and Everything Game.",
-  keywords: "cards, value tracker, CUE, card game, universe",
+    "Vote card values in the Cards, the Universe, and Everything Game!",
+  keywords: "cards, value tracker, CUE, card game, universe, vote",
   author: "Niko",
 };
 
