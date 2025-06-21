@@ -390,37 +390,37 @@ export default function CardList() {
               : "max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible"
           }`}
         >
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">Total</div>
             <div className="text-base sm:text-xl font-bold text-gray-800">
               {cardStats.totalCards}
             </div>
           </div>
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">Unvalued</div>
             <div className="text-base sm:text-xl font-bold text-gray-600">
               {cardStats.unvaluedCards}
             </div>
           </div>
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">Low</div>
             <div className="text-base sm:text-xl font-bold text-emerald-600">
               {cardStats.lowValueCards}
             </div>
           </div>
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">Mid</div>
             <div className="text-base sm:text-xl font-bold text-amber-600">
               {cardStats.midValueCards}
             </div>
           </div>
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">High</div>
             <div className="text-base sm:text-xl font-bold text-orange-600">
               {cardStats.highValueCards}
             </div>
           </div>
-          <div className="bg-white p-2 rounded-lg border border-gray-100">
+          <div className="bg-white p-2 rounded-lg border border-gray-100 text-center">
             <div className="text-xs text-gray-500">1mm+</div>
             <div className="text-base sm:text-xl font-bold text-red-600">
               {cardStats.oneMMPlusCards}
