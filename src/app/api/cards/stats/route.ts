@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const lowValueCards = cards.filter((card) => card.value === 0.25).length;
     const midValueCards = cards.filter((card) => card.value === 0.5).length;
     const highValueCards = cards.filter((card) => card.value === 0.75).length;
-    const oneMMPlusCards = cards.filter((card) => card.value === 1).length;
+    const oneMMPlusCards = cards.filter((card) => card.value >= 1).length;
 
     return NextResponse.json({
       totalCards,

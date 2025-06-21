@@ -51,7 +51,7 @@ const getCardStyle = (value: number, mostVotedValues?: number[]) => {
     return "bg-purple-50/30 border-purple-100 hover:bg-purple-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === -1)
     return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
-  if (value <= 0.25)
+  if (value === 0.25)
     return "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 0.5)
     return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
@@ -59,21 +59,24 @@ const getCardStyle = (value: number, mostVotedValues?: number[]) => {
     return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 1)
     return "bg-red-50/30 border-red-100 hover:bg-red-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
-  return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
+  if (value > 1)
+    return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
+  return "bg-gray-50/30 border-gray-200 hover:bg-gray-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
 };
 
 const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1)
     return "bg-purple-100/80 text-purple-700 font-medium shadow-sm";
   if (value === -1) return "bg-gray-100/80 text-gray-700 font-medium shadow-sm";
-  if (value <= 0.25)
+  if (value === 0.25)
     return "bg-emerald-100/80 text-emerald-700 font-medium shadow-sm";
   if (value === 0.5)
     return "bg-amber-100/80 text-amber-700 font-medium shadow-sm";
   if (value === 0.75)
     return "bg-orange-100/80 text-orange-700 font-medium shadow-sm";
   if (value === 1) return "bg-red-100/80 text-red-700 font-medium shadow-sm";
-  return "bg-rose-100/80 text-rose-700 font-medium shadow-sm";
+  if (value > 1) return "bg-rose-100/80 text-rose-700 font-medium shadow-sm";
+  return "bg-gray-100/80 text-gray-700 font-medium shadow-sm";
 };
 
 const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
@@ -381,55 +384,45 @@ export default function CardList() {
 
         <div
           id="stats-section"
-          className={`grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 mb-6 transition-all duration-300 ease-in-out ${
+          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 sm:gap-4 mb-6 ${
             isStatsExpanded
               ? "max-h-[200px] opacity-100"
               : "max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible"
           }`}
         >
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
-              Total Cards
-            </div>
-            <div className="text-lg sm:text-2xl font-bold text-gray-800">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">Total</div>
+            <div className="text-base sm:text-xl font-bold text-gray-800">
               {cardStats.totalCards}
             </div>
           </div>
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
-              Unvalued
-            </div>
-            <div className="text-lg sm:text-2xl font-bold text-gray-600">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">Unvalued</div>
+            <div className="text-base sm:text-xl font-bold text-gray-600">
               {cardStats.unvaluedCards}
             </div>
           </div>
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
-              Low Value
-            </div>
-            <div className="text-lg sm:text-2xl font-bold text-emerald-600">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">Low</div>
+            <div className="text-base sm:text-xl font-bold text-emerald-600">
               {cardStats.lowValueCards}
             </div>
           </div>
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
-              Mid Value
-            </div>
-            <div className="text-lg sm:text-2xl font-bold text-amber-600">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">Mid</div>
+            <div className="text-base sm:text-xl font-bold text-amber-600">
               {cardStats.midValueCards}
             </div>
           </div>
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
-              High Value
-            </div>
-            <div className="text-lg sm:text-2xl font-bold text-orange-600">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">High</div>
+            <div className="text-base sm:text-xl font-bold text-orange-600">
               {cardStats.highValueCards}
             </div>
           </div>
-          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">1mm+</div>
-            <div className="text-lg sm:text-2xl font-bold text-red-600">
+          <div className="bg-white p-2 rounded-lg border border-gray-100">
+            <div className="text-xs text-gray-500">1mm+</div>
+            <div className="text-base sm:text-xl font-bold text-red-600">
               {cardStats.oneMMPlusCards}
             </div>
           </div>
