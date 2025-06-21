@@ -213,6 +213,10 @@ export default function CardList() {
           params.append("search", debouncedSearchQuery.trim());
         }
 
+        if (valueFilter !== "all") {
+          params.append("valueFilter", valueFilter.toString());
+        }
+
         const res = await fetch(`/api/cards?${params}`);
         const data = await res.json();
 
@@ -255,13 +259,18 @@ export default function CardList() {
         setLoading(false);
       }
     },
-    [sortBy, order, debouncedSearchQuery, pagination.limit]
+    [sortBy, order, debouncedSearchQuery, valueFilter, pagination.limit]
   );
 
   useEffect(() => {
     fetchCards(1);
     fetchCardStats();
   }, [fetchCards, fetchCardStats]);
+
+  // Reset to page 1 when valueFilter changes
+  useEffect(() => {
+    fetchCards(1);
+  }, [valueFilter]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -351,14 +360,6 @@ export default function CardList() {
       setDeleteState({ id: null, isDeleting: false, error: null });
     }
   };
-
-  const filteredCards = cards.filter((card) => {
-    const matchesValue =
-      valueFilter === "all" ||
-      card.value === valueFilter ||
-      (valueFilter === 0 && card.value > 1);
-    return matchesValue;
-  });
 
   return (
     <div className="h-full flex flex-col">
@@ -512,7 +513,7 @@ export default function CardList() {
               </div>
             ))}
           </div>
-        ) : filteredCards.length === 0 ? (
+        ) : cards.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border p-8">
             <div className="text-6xl mb-4">🔍</div>
             <p className="text-gray-500 text-lg mb-2">
@@ -533,7 +534,7 @@ export default function CardList() {
           <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 relative">
             <div className="absolute inset-y-0 right-0 w-2 bg-gradient-to-b from-transparent via-gray-100 to-transparent pointer-events-none"></div>
             <Accordion type="single" collapsible className="space-y-4 pb-4">
-              {filteredCards.map((card) => (
+              {cards.map((card) => (
                 <AccordionItem
                   key={card.id}
                   value={card.id}

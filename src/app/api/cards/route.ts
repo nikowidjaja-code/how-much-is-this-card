@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
+    const valueFilter = searchParams.get("valueFilter");
 
     const validFields = ["name", "value", "updatedAt"] as const;
     const validOrders = ["asc", "desc"] as const;
@@ -27,15 +28,28 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
     const take = Math.min(limit, 100); // Cap at 100 items per page
 
-    // Build where clause for search
-    const where = search
-      ? {
-          name: {
-            contains: search,
-            mode: "insensitive" as const,
-          },
+    // Build where clause for search and value filter
+    const where: any = {};
+
+    if (search) {
+      where.name = {
+        contains: search,
+        mode: "insensitive" as const,
+      };
+    }
+
+    // Add value filtering
+    if (valueFilter && valueFilter !== "all") {
+      const filterValue = parseFloat(valueFilter);
+      if (!isNaN(filterValue)) {
+        if (filterValue === 1) {
+          // Special case for "1mm+" (value > 1)
+          where.value = { gt: 1 };
+        } else {
+          where.value = filterValue;
         }
-      : {};
+      }
+    }
 
     // Get total count for pagination
     const totalCount = await prisma.card.count({ where });
