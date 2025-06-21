@@ -453,9 +453,34 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                               className="bg-gray-50 rounded-lg p-3"
                             >
                               <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-gray-900">
-                                  {vote.user.name}
-                                </span>
+                                <div>
+                                  <button
+                                    onClick={() =>
+                                      handleProfileClick(vote.user.id)
+                                    }
+                                    className="font-medium hover:text-blue-600 hover:underline transition-colors cursor-pointer flex items-center gap-1"
+                                  >
+                                    {vote.user.name}
+                                    <svg
+                                      className="w-3 h-3 text-gray-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                      />
+                                    </svg>
+                                  </button>
+                                  <span className="text-xs text-indigo-600">
+                                    {vote.user.role === "ADMIN"
+                                      ? "Admin"
+                                      : "User"}
+                                  </span>
+                                </div>
                                 <span
                                   className={`text-xs px-2 py-1 rounded-full ${
                                     vote.user.role === "ADMIN"
@@ -587,7 +612,27 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all" />
                               </button>
                               <div>
-                                <p className="font-medium">{vote.user.name}</p>
+                                <button
+                                  onClick={() =>
+                                    handleProfileClick(vote.user.id)
+                                  }
+                                  className="font-medium hover:text-blue-600 hover:underline transition-colors cursor-pointer flex items-center gap-1"
+                                >
+                                  {vote.user.name}
+                                  <svg
+                                    className="w-3 h-3 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                    />
+                                  </svg>
+                                </button>
                                 <span className="text-xs text-indigo-600">
                                   {vote.user.role === "ADMIN"
                                     ? "Admin"
