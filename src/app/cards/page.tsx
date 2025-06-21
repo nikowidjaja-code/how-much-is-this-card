@@ -37,6 +37,15 @@ interface DeleteState {
   error: string | null;
 }
 
+interface CardStats {
+  totalCards: number;
+  unvaluedCards: number;
+  lowValueCards: number;
+  midValueCards: number;
+  highValueCards: number;
+  oneMMPlusCards: number;
+}
+
 const getCardStyle = (value: number, mostVotedValues?: number[]) => {
   if (value === -1 && mostVotedValues && mostVotedValues.length > 1)
     return "bg-purple-50/30 border-purple-100 hover:bg-purple-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
@@ -145,6 +154,14 @@ export default function CardList() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const [cardStats, setCardStats] = useState<CardStats>({
+    totalCards: 0,
+    unvaluedCards: 0,
+    lowValueCards: 0,
+    midValueCards: 0,
+    highValueCards: 0,
+    oneMMPlusCards: 0,
+  });
   const [deleteState, setDeleteState] = useState<DeleteState>({
     id: null,
     isDeleting: false,
@@ -162,6 +179,21 @@ export default function CardList() {
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
+
+  const fetchCardStats = useCallback(async () => {
+    try {
+      const res = await fetch("/api/cards/stats");
+      const data = await res.json();
+
+      if (data.error) {
+        console.error("Error fetching card stats:", data.error);
+      } else {
+        setCardStats(data);
+      }
+    } catch (error) {
+      console.error("Error fetching card stats:", error);
+    }
+  }, []);
 
   const fetchCards = useCallback(
     async (page = 1) => {
@@ -225,7 +257,8 @@ export default function CardList() {
 
   useEffect(() => {
     fetchCards(1);
-  }, [fetchCards]);
+    fetchCardStats();
+  }, [fetchCards, fetchCardStats]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -263,6 +296,7 @@ export default function CardList() {
       }
 
       fetchCards(pagination.page);
+      fetchCardStats();
     } catch (err) {
       setVotingStates((prev) => ({
         ...prev,
@@ -301,6 +335,7 @@ export default function CardList() {
 
       // Refresh the current page after deletion
       fetchCards(pagination.page);
+      fetchCardStats();
     } catch (error) {
       setDeleteState((prev) => ({
         ...prev,
@@ -357,7 +392,7 @@ export default function CardList() {
               Total Cards
             </div>
             <div className="text-lg sm:text-2xl font-bold text-gray-800">
-              {pagination.totalCount}
+              {cardStats.totalCards}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
@@ -365,7 +400,7 @@ export default function CardList() {
               Unvalued
             </div>
             <div className="text-lg sm:text-2xl font-bold text-gray-600">
-              {cards.filter((card) => card.value === -1).length}
+              {cardStats.unvaluedCards}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
@@ -373,7 +408,7 @@ export default function CardList() {
               Low Value
             </div>
             <div className="text-lg sm:text-2xl font-bold text-emerald-600">
-              {cards.filter((card) => card.value === 0.25).length}
+              {cardStats.lowValueCards}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
@@ -381,7 +416,7 @@ export default function CardList() {
               Mid Value
             </div>
             <div className="text-lg sm:text-2xl font-bold text-amber-600">
-              {cards.filter((card) => card.value === 0.5).length}
+              {cardStats.midValueCards}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
@@ -389,13 +424,13 @@ export default function CardList() {
               High Value
             </div>
             <div className="text-lg sm:text-2xl font-bold text-orange-600">
-              {cards.filter((card) => card.value === 0.75).length}
+              {cardStats.highValueCards}
             </div>
           </div>
           <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-xs sm:text-sm text-gray-500 mb-1">1mm+</div>
             <div className="text-lg sm:text-2xl font-bold text-red-600">
-              {cards.filter((card) => card.value === 1).length}
+              {cardStats.oneMMPlusCards}
             </div>
           </div>
         </div>
