@@ -4,11 +4,11 @@ import { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
-  const isAdminRoute =
-    request.nextUrl.pathname.startsWith("/add") ||
-    request.nextUrl.pathname.startsWith("/edit");
+  const isAdminRoute = request.nextUrl.pathname.startsWith("/edit");
   const isProtectedRoute =
-    isAdminRoute || request.nextUrl.pathname === "/profile";
+    request.nextUrl.pathname.startsWith("/add") ||
+    isAdminRoute ||
+    request.nextUrl.pathname === "/profile";
 
   if (isProtectedRoute) {
     if (!token) {

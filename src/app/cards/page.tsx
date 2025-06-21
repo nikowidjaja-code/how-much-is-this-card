@@ -521,15 +521,13 @@ export default function CardList() {
             <p className="text-gray-400 text-sm mb-6">
               Try adjusting your search or filters
             </p>
-            {session?.user?.role === "ADMIN" && (
-              <Link
-                href={`/add?name=${encodeURIComponent(searchQuery)}`}
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
-              >
-                <span>➕</span>
-                <span>Add New Card</span>
-              </Link>
-            )}
+            <Link
+              href={`/add?name=${encodeURIComponent(searchQuery)}`}
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
+            >
+              <span>➕</span>
+              <span>Add New Card</span>
+            </Link>
           </div>
         ) : (
           <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 relative">

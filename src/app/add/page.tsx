@@ -12,8 +12,8 @@ export default function AddCard() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status !== "loading" && session?.user?.role !== "ADMIN") {
-      router.push("/cards");
+    if (status !== "loading" && !session) {
+      router.push("/login");
     }
   }, [status, session, router]);
 
@@ -24,8 +24,8 @@ export default function AddCard() {
     }
   }, [searchParams]);
 
-  // If not admin, don't render the form
-  if (status === "loading" || session?.user?.role !== "ADMIN") {
+  // If not authenticated, show loading
+  if (status === "loading" || !session) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-white p-6 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] space-y-6">

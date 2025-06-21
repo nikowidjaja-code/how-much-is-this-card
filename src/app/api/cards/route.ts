@@ -159,14 +159,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user || user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const { name } = await req.json();
     if (!name || typeof name !== "string") {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });

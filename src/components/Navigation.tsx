@@ -88,11 +88,9 @@ export default function Navigation() {
             <Link href="/cards" className="hover:text-blue-600">
               🃏 Cards
             </Link>
-            {session?.user?.role === "ADMIN" && (
-              <Link href="/add" className="hover:text-green-600">
-                ➕ Add
-              </Link>
-            )}
+            <Link href="/add" className="hover:text-green-600">
+              ➕ Add
+            </Link>
           </>
         )}
       </div>
