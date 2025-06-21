@@ -46,8 +46,10 @@ export default function VotingHistory({ hideTitle }: VotingHistoryProps) {
         return "Low";
       case 0.5:
         return "Mid";
-      case 1:
+      case 0.75:
         return "High";
+      case 1:
+        return "1mm+";
       default:
         return value.toString();
     }
@@ -59,8 +61,10 @@ export default function VotingHistory({ hideTitle }: VotingHistoryProps) {
         return "bg-emerald-500";
       case 0.5:
         return "bg-amber-500";
+      case 0.75:
+        return "bg-orange-500";
       case 1:
-        return "bg-blue-500";
+        return "bg-red-500";
       default:
         return "bg-gray-500";
     }
@@ -132,7 +136,9 @@ export default function VotingHistory({ hideTitle }: VotingHistoryProps) {
                     ? "bg-emerald-50 text-emerald-700"
                     : vote.value === 0.5
                     ? "bg-amber-50 text-amber-700"
-                    : "bg-blue-50 text-blue-700"
+                    : vote.value === 0.75
+                    ? "bg-orange-50 text-orange-700"
+                    : "bg-red-50 text-red-700"
                 }`}
               >
                 {getVoteLabel(vote.value)}

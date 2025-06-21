@@ -75,7 +75,7 @@ export default function VoteAccordion({
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 onClick={() => handleVote(0.25)}
                 disabled={isVoting}
@@ -93,12 +93,20 @@ export default function VoteAccordion({
                 Mid (0.5)
               </Button>
               <Button
+                onClick={() => handleVote(0.75)}
+                disabled={isVoting}
+                variant="outline"
+                className="bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200"
+              >
+                High (0.75)
+              </Button>
+              <Button
                 onClick={() => handleVote(1.0)}
                 disabled={isVoting}
                 variant="outline"
-                className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
+                className="bg-red-50 text-red-700 hover:bg-red-100 border-red-200"
               >
-                High (1.0)
+                1mm+ (1.0)
               </Button>
             </div>
           </div>

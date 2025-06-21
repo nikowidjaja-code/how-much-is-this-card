@@ -47,9 +47,9 @@ const getCardStyle = (value: number, mostVotedValues?: number[]) => {
   if (value === 0.5)
     return "bg-amber-50/30 border-amber-100 hover:bg-amber-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   if (value === 0.75)
-    return "bg-blue-50/30 border-blue-100 hover:bg-blue-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
-  if (value === 1)
     return "bg-orange-50/30 border-orange-100 hover:bg-orange-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
+  if (value === 1)
+    return "bg-red-50/30 border-red-100 hover:bg-red-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
   return "bg-rose-50/30 border-rose-100 hover:bg-rose-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-all duration-200";
 };
 
@@ -62,9 +62,8 @@ const getBadgeStyle = (value: number, mostVotedValues?: number[]) => {
   if (value === 0.5)
     return "bg-amber-100/80 text-amber-700 font-medium shadow-sm";
   if (value === 0.75)
-    return "bg-blue-100/80 text-blue-700 font-medium shadow-sm";
-  if (value === 1)
     return "bg-orange-100/80 text-orange-700 font-medium shadow-sm";
+  if (value === 1) return "bg-red-100/80 text-red-700 font-medium shadow-sm";
   return "bg-rose-100/80 text-rose-700 font-medium shadow-sm";
 };
 
@@ -74,7 +73,8 @@ const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
       .map((v) => {
         if (v === 0.25) return "Low";
         if (v === 0.5) return "Mid";
-        if (v === 1) return "High";
+        if (v === 0.75) return "High";
+        if (v === 1) return "1mm+";
         return v.toFixed(2);
       })
       .join(" / ");
@@ -82,7 +82,8 @@ const getValueDisplay = (value: number, mostVotedValues?: number[]) => {
   if (value === -1) return "Unvoted";
   if (value === 0.25) return "Low";
   if (value === 0.5) return "Mid";
-  if (value === 1) return "High";
+  if (value === 0.75) return "High";
+  if (value === 1) return "1mm+";
   return value.toFixed(2);
 };
 
@@ -380,7 +381,13 @@ export default function CardList() {
               High Value
             </div>
             <div className="text-lg sm:text-2xl font-bold text-orange-600">
-              {cards.filter((card) => card.value >= 0.75).length}
+              {cards.filter((card) => card.value === 0.75).length}
+            </div>
+          </div>
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">1mm+</div>
+            <div className="text-lg sm:text-2xl font-bold text-red-600">
+              {cards.filter((card) => card.value === 1).length}
             </div>
           </div>
         </div>
@@ -409,7 +416,8 @@ export default function CardList() {
             <option value="all">All Values</option>
             <option value={0.25}>Low</option>
             <option value={0.5}>Mid</option>
-            <option value={1}>High</option>
+            <option value={0.75}>High</option>
+            <option value={1}>1mm+</option>
           </select>
 
           <div className="flex gap-2 sm:gap-0">

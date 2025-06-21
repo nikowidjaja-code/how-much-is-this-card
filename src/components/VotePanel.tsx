@@ -138,8 +138,10 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
         return "Low";
       case 0.5:
         return "Mid";
-      case 1:
+      case 0.75:
         return "High";
+      case 1:
+        return "1mm+";
       default:
         return value.toString();
     }
@@ -151,8 +153,10 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
         return "bg-emerald-500";
       case 0.5:
         return "bg-amber-500";
+      case 0.75:
+        return "bg-orange-500";
       case 1:
-        return "bg-blue-500";
+        return "bg-red-500";
       default:
         return "bg-gray-500";
     }
@@ -255,17 +259,30 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
           Mid (0.5)
         </Button>
         <Button
+          onClick={() => handleVote(0.75)}
+          disabled={isVoting}
+          variant="outline"
+          size="sm"
+          className={`font-['Trebuchet_MS'] ${
+            getUserVote() === 0.75
+              ? "bg-orange-600 text-white hover:bg-orange-700 border-orange-600"
+              : "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200"
+          }`}
+        >
+          High (0.75)
+        </Button>
+        <Button
           onClick={() => handleVote(1.0)}
           disabled={isVoting}
           variant="outline"
           size="sm"
           className={`font-['Trebuchet_MS'] ${
             getUserVote() === 1.0
-              ? "bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
-              : "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
+              ? "bg-red-600 text-white hover:bg-red-700 border-red-600"
+              : "bg-red-50 text-red-700 hover:bg-red-100 border-red-200"
           }`}
         >
-          High (1.0)
+          1mm+ (1.0)
         </Button>
       </div>
 
@@ -480,7 +497,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                 ? "border-emerald-500"
                                 : vote.value === 0.5
                                 ? "border-amber-500"
-                                : "border-blue-500"
+                                : vote.value === 0.75
+                                ? "border-orange-500"
+                                : "border-red-500"
                             }`}
                           >
                             {vote.user.image ? (
@@ -515,7 +534,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                   ? "border-emerald-500"
                                   : vote.value === 0.5
                                   ? "border-amber-500"
-                                  : "border-blue-500"
+                                  : vote.value === 0.75
+                                  ? "border-orange-500"
+                                  : "border-red-500"
                               }`}
                             >
                               {vote.user.image ? (
@@ -549,7 +570,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                 ? "bg-emerald-500"
                                 : vote.value === 0.5
                                 ? "bg-amber-500"
-                                : "bg-blue-500"
+                                : vote.value === 0.75
+                                ? "bg-orange-500"
+                                : "bg-red-500"
                             }`}
                           />
                           <span
@@ -558,7 +581,9 @@ export function VotePanel({ cardId, onVoteSuccess }: VotePanelProps) {
                                 ? "text-emerald-600"
                                 : vote.value === 0.5
                                 ? "text-amber-600"
-                                : "text-blue-600"
+                                : vote.value === 0.75
+                                ? "text-orange-600"
+                                : "text-red-600"
                             }`}
                           >
                             {getVoteLabel(vote.value)}
