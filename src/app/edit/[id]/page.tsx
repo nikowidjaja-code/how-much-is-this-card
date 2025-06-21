@@ -14,16 +14,15 @@ export default function EditCard() {
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        const res = await fetch("/api/cards");
+        const res = await fetch(`/api/cards/${id}`);
         const data = await res.json();
-        const card = data.find((c: any) => c.id === id);
 
-        if (!card) {
-          setError("Card not found");
+        if (data.error) {
+          setError(data.error);
           return;
         }
 
-        setName(card.name);
+        setName(data.name);
       } catch (err) {
         setError("Failed to load card data");
       } finally {

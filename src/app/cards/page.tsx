@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   Accordion,
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { VotePanel } from "@/components/VotePanel";
 import { log } from "console";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Card {
   id: string;
@@ -20,6 +20,15 @@ interface Card {
   updatedAt: string;
   mostVotedValues?: number[];
   lastVoteTime?: string | null;
+}
+
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 interface DeleteState {
@@ -122,8 +131,17 @@ export default function CardList() {
   );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [cards, setCards] = useState<Card[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 20,
+    totalCount: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
   const [valueFilter, setValueFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
   const [deleteState, setDeleteState] = useState<DeleteState>({
@@ -135,28 +153,84 @@ export default function CardList() {
     [key: string]: { isVoting: boolean; error: string | null };
   }>({});
 
-  const fetchCards = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/cards?sortBy=${sortBy}&order=${order}`);
-      const data = await res.json();
-      if (data.error) {
-        console.error("Error fetching cards:", data.error);
+  // Debounce search query
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const fetchCards = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          sortBy,
+          order,
+          page: page.toString(),
+          limit: pagination.limit.toString(),
+        });
+
+        if (debouncedSearchQuery.trim()) {
+          params.append("search", debouncedSearchQuery.trim());
+        }
+
+        const res = await fetch(`/api/cards?${params}`);
+        const data = await res.json();
+
+        if (data.error) {
+          console.error("Error fetching cards:", data.error);
+          setCards([]);
+          setPagination({
+            page: 1,
+            limit: pagination.limit,
+            totalCount: 0,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPrevPage: false,
+          });
+        } else {
+          setCards(data.cards || []);
+          setPagination(
+            data.pagination || {
+              page: 1,
+              limit: pagination.limit,
+              totalCount: 0,
+              totalPages: 0,
+              hasNextPage: false,
+              hasPrevPage: false,
+            }
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching cards:", error);
         setCards([]);
-      } else {
-        setCards(Array.isArray(data) ? data : []);
+        setPagination({
+          page: 1,
+          limit: pagination.limit,
+          totalCount: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching cards:", error);
-      setCards([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [sortBy, order, debouncedSearchQuery, pagination.limit]
+  );
 
   useEffect(() => {
-    fetchCards();
-  }, [sortBy, order]);
+    fetchCards(1);
+  }, [fetchCards]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchCards(newPage);
+    }
+  };
 
   const handleVote = async (cardId: string, value: number) => {
     if (!session) {
@@ -187,7 +261,7 @@ export default function CardList() {
         throw new Error(data.error || "Failed to vote");
       }
 
-      fetchCards();
+      fetchCards(pagination.page);
     } catch (err) {
       setVotingStates((prev) => ({
         ...prev,
@@ -224,7 +298,8 @@ export default function CardList() {
         throw new Error(data.error || "Failed to delete card");
       }
 
-      setCards((prevCards) => prevCards.filter((card) => card.id !== id));
+      // Refresh the current page after deletion
+      fetchCards(pagination.page);
     } catch (error) {
       setDeleteState((prev) => ({
         ...prev,
@@ -243,10 +318,7 @@ export default function CardList() {
       valueFilter === "all" ||
       card.value === valueFilter ||
       (valueFilter === 0 && card.value > 1);
-    const matchesSearch = card.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesValue && matchesSearch;
+    return matchesValue;
   });
 
   return (
@@ -273,39 +345,47 @@ export default function CardList() {
 
         <div
           id="stats-section"
-          className={`grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out ${
+          className={`grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6 transition-all duration-300 ease-in-out ${
             isStatsExpanded
               ? "max-h-[200px] opacity-100"
               : "max-h-0 sm:max-h-[200px] opacity-0 sm:opacity-100 overflow-hidden sm:overflow-visible"
           }`}
         >
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Total Cards</div>
-            <div className="text-2xl font-bold text-gray-800">
-              {cards.length}
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
+              Total Cards
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-800">
+              {pagination.totalCount}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Low Value</div>
-            <div className="text-2xl font-bold text-emerald-600">
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
+              Low Value
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-emerald-600">
               {cards.filter((card) => card.value <= 0.25).length}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">Mid Value</div>
-            <div className="text-2xl font-bold text-amber-600">
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
+              Mid Value
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-amber-600">
               {cards.filter((card) => card.value === 0.5).length}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-sm text-gray-500 mb-1">High Value</div>
-            <div className="text-2xl font-bold text-orange-600">
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
+              High Value
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-orange-600">
               {cards.filter((card) => card.value >= 0.75).length}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <div className="relative w-full sm:w-64">
             <input
               type="text"
@@ -332,27 +412,31 @@ export default function CardList() {
             <option value={1}>High</option>
           </select>
 
-          <select
-            value={sortBy}
-            onChange={(e) =>
-              setSortBy(e.target.value as "updatedAt" | "name" | "value")
-            }
-            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-            aria-label="Sort by"
-          >
-            <option value="updatedAt">Recently Voted</option>
-            <option value="name">Alphabetical</option>
-            <option value="value">Value</option>
-          </select>
+          <div className="flex gap-2 sm:gap-0">
+            <select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as "updatedAt" | "name" | "value")
+              }
+              className="h-11 border border-gray-200 px-4 rounded-lg text-base flex-1 sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              aria-label="Sort by"
+            >
+              <option value="updatedAt">Recently Voted</option>
+              <option value="name">Alphabetical</option>
+              <option value="value">Value</option>
+            </select>
 
-          <button
-            onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-            className="h-11 border border-gray-200 px-4 rounded-lg text-base w-full sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-            title={order === "asc" ? "Ascending" : "Descending"}
-            aria-label={`Sort ${order === "asc" ? "ascending" : "descending"}`}
-          >
-            {order === "asc" ? "▲" : "▼"}
-          </button>
+            <button
+              onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+              className="h-11 border border-gray-200 px-3 sm:px-4 rounded-lg text-base w-12 sm:w-11 flex justify-center items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              title={order === "asc" ? "Ascending" : "Descending"}
+              aria-label={`Sort ${
+                order === "asc" ? "ascending" : "descending"
+              }`}
+            >
+              {order === "asc" ? "▲" : "▼"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -453,7 +537,10 @@ export default function CardList() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="bg-gray-50/50 py-3">
-                    <VotePanel cardId={card.id} onVoteSuccess={fetchCards} />
+                    <VotePanel
+                      cardId={card.id}
+                      onVoteSuccess={() => fetchCards(pagination.page)}
+                    />
                     {session?.user?.role === "ADMIN" && (
                       <div className="flex items-center justify-end gap-4 px-5 mt-3 pt-3 border-t border-gray-200">
                         <Link
@@ -497,6 +584,81 @@ export default function CardList() {
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!loading && pagination.totalPages > 1 && (
+        <div className="py-4 flex-none border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+              {Math.min(
+                pagination.page * pagination.limit,
+                pagination.totalCount
+              )}{" "}
+              of {pagination.totalCount} cards
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={!pagination.hasPrevPage}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Previous</span>
+              </button>
+
+              {/* Mobile: Simple page indicator */}
+              <div className="sm:hidden flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {pagination.page} / {pagination.totalPages}
+                </span>
+              </div>
+
+              {/* Desktop: Full pagination */}
+              <div className="hidden sm:flex items-center gap-1">
+                {Array.from(
+                  { length: Math.min(5, pagination.totalPages) },
+                  (_, i) => {
+                    let pageNum;
+                    if (pagination.totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (pagination.page <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.page >= pagination.totalPages - 2) {
+                      pageNum = pagination.totalPages - 4 + i;
+                    } else {
+                      pageNum = pagination.page - 2 + i;
+                    }
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                          pageNum === pagination.page
+                            ? "bg-indigo-600 text-white"
+                            : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={!pagination.hasNextPage}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {deleteState.error && (
         <div className="fixed bottom-4 right-4 bg-rose-100 text-rose-700 px-4 py-2 rounded-lg shadow-lg border border-rose-200 animate-fade-in">

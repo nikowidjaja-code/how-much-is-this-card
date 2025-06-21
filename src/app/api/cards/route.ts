@@ -11,6 +11,9 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const sortBy = searchParams.get("sortBy") || "updatedAt";
     const order = (searchParams.get("order") || "desc") as "asc" | "desc";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const search = searchParams.get("search") || "";
 
     const validFields = ["name", "value", "updatedAt"] as const;
     const validOrders = ["asc", "desc"] as const;
@@ -20,7 +23,25 @@ export async function GET(req: NextRequest) {
       : "updatedAt";
     const sortOrder = validOrders.includes(order) ? order : "desc";
 
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+    const take = Math.min(limit, 100); // Cap at 100 items per page
+
+    // Build where clause for search
+    const where = search
+      ? {
+          name: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        }
+      : {};
+
+    // Get total count for pagination
+    const totalCount = await prisma.card.count({ where });
+
     const cards = await prisma.card.findMany({
+      where,
       orderBy: {
         [field]: sortOrder,
       },
@@ -35,6 +56,8 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      skip,
+      take,
     });
 
     // Calculate mostVotedValues for each card
@@ -108,7 +131,17 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(cardsWithVoteInfo);
+    return NextResponse.json({
+      cards: cardsWithVoteInfo,
+      pagination: {
+        page,
+        limit: take,
+        totalCount,
+        totalPages: Math.ceil(totalCount / take),
+        hasNextPage: page < Math.ceil(totalCount / take),
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (error) {
     console.error("GET /api/cards error:", error);
     return NextResponse.json(
