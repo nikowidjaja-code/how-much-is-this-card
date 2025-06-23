@@ -2,6 +2,8 @@
 
 A modern web application built with Next.js for voting, managing and tracking card values. This application allows users to add, view, and manage cards with an admin interface for authorized users.
 
+https://how-much-is-this-card.vercel.app/
+
 ## Features
 
 - 🔐 User Authentication with NextAuth.js
